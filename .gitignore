@@ -1,0 +1,8 @@
+# Dependencies
+node_modules
+
+# Documentation
+docs
+
+# Test Coverage Reports
+tests/coverage

@@ -1,0 +1,11 @@
+{
+  "compact": false,
+  "presets": ["es2015"],
+  "env": {
+    "test": {
+      "plugins": [
+        ["__coverage__", {"ignore": "*.+(test|stub).*"}]
+      ]
+    }
+  }
+}
