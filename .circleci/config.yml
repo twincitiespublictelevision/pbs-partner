@@ -89,3 +89,12 @@ workflows:
       - node_build:
           requires:
             - checkout
+      - deploy_to_github:
+          requires:
+            - node_test
+            - node_build
+          filters:
+            branches:
+              only:
+                - qa
+                - hotfix
