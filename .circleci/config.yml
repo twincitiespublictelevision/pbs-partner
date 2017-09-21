@@ -1,0 +1,91 @@
+version: 2
+jobs:
+  checkout:
+    docker:
+      - image: circleci/node:6.10
+    steps:
+      - restore_cache:
+          key: repo-{{ .Branch }}
+      - checkout
+      - run: echo $CIRCLE_SHA1 > .circle-sha
+      - save_cache:
+          key: repo-{{ .Branch }}-{{ checksum ".circle-sha" }}
+          paths:
+            - ~/project
+
+  node_test:
+    docker:
+      - image: circleci/node:6.10
+    steps:
+      - run: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          key: repo-{{ .Branch }}-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          key: node_modules-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: node_modules-{{ checksum "package.json" }}
+          paths:
+            - ~/project/node_modules
+      - run:
+          name: Run JS Unit Tests
+          command: npm test
+
+  node_build:
+    docker:
+      - image: circleci/node:6.10
+    steps:
+      - run: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          key: repo-{{ .Branch }}-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          key: node_modules-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: node_modules-{{ checksum "package.json" }}
+          paths:
+            - ~/project/node_modules
+      - run:
+          name: Build dist version
+          command: npm run build
+      - save_cache:
+          key: dist-{{ checksum ".circle-sha" }}
+          paths:
+            - ~/project/dist
+
+  deploy_to_github:
+    docker:
+      - image: circleci/node:6.10
+    steps:
+      - run: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          key: repo-{{ .Branch }}-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          key: dist-{{ checksum ".circle-sha" }}
+      - add-ssh-keys:
+         fingerprints:
+           - "59:d6:f3:73:c1:43:04:25:d8:c9:cb:16:04:b3:ec:be"
+      - run:
+          command: |
+            rm .circle-sha
+            mkdir -p ~/.ssh
+            touch ~/.ssh/known_hosts
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            git add .
+            git status
+            git config --global user.email webmaster@tpt.org
+            git config --global user.name tptwebmaster
+            git diff-index --quiet HEAD || git commit -m 'Circle Build [ci skip]'
+            git push origin $CIRCLE_BRANCH
+
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - checkout
+      - node_test:
+          requires:
+            - checkout
+      - node_build:
+          requires:
+            - checkout

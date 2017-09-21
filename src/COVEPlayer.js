@@ -1,170 +1,167 @@
-var COVEMediaEvents = require('./COVEMediaEvents'),
-    extend = require('./libs/extend.js');
+// var COVEMediaEvents = require('./COVEMediaEvents');
+import COVEMediaEvents from './COVEMediaEvents';
 
-var COVEPlayer = (function() {
+import extend from './libs/extend';
 
-  // Namespace for private variables and functions
-  var privateNS = {
-    defaults: { // Namespace for default options
-      plugins: {}
-    }
-  };
-
-  /**
-   * An interface for binding to and interacting with an embedded COVE player
-   *
-   * @param {object} [options] Passes to COVEMediaEvents. See constructor.
-   * @constructor
-   */
-  function COVEPlayer(options) {
-
-    // Call the parent constructor
-    COVEMediaEvents.call(this, this.options);
-
-    // Add connected as an allowed event for the MessageAPI
-    this._options.allowedEvents = this._options.allowedEvents.concat([
-      'connected'
-    ]);
-
-    // Extend the options with any existing options
-    this._options = extend({}, privateNS.defaults, (this._options || {}));
+// Namespace for private variables and functions
+var privateNS = {
+  defaults: { // Namespace for default options
+    plugins: {}
   }
+};
 
-  // Extend from the COVEMessagingAPI prototype
-  COVEPlayer.prototype = Object.create(COVEMediaEvents.prototype);
+/**
+ * An interface for binding to and interacting with an embedded COVE player
+ *
+ * @param {object} [options] Passes to COVEMediaEvents. See constructor.
+ * @constructor
+ */
+function COVEPlayer(options) {
 
-  // Set the "constructor" property to refer to COVEPlayer
-  COVEPlayer.prototype.constructor = COVEPlayer;
+  // Call the parent constructor
+  COVEMediaEvents.call(this, this.options);
 
-  /**
-   * Sets up playback tracking and events. Loads plugins for the player. Calls
-   * parent method.
-   *
-   * @param playerFrame
-   */
-  COVEPlayer.prototype.setPlayer = function setPlayer(playerFrame) {
+  // Add connected as an allowed event for the MessageAPI
+  this._options.allowedEvents = this._options.allowedEvents.concat([
+    'connected'
+  ]);
 
-    // Add a handler to check for initialization
-    this.on('message', this._initialize);
+  // Extend the options with any existing options
+  this._options = extend({}, privateNS.defaults, (this._options || {}));
+}
 
-    // Add a handler to run on the initial play event
-    this.on('play', this._onInitialPlay);
+// Extend from the COVEMessagingAPI prototype
+COVEPlayer.prototype = Object.create(COVEMediaEvents.prototype);
 
-    // When a pause occurs, check to see if the end of video has been reached
-    this.on('pause', this._handlePauseAtEndOfVideo);
+// Set the "constructor" property to refer to COVEPlayer
+COVEPlayer.prototype.constructor = COVEPlayer;
 
-    // Boot plugins
-    this._loadPlugins();
+/**
+ * Sets up playback tracking and events. Loads plugins for the player. Calls
+ * parent method.
+ *
+ * @param playerFrame
+ */
+COVEPlayer.prototype.setPlayer = function setPlayer(playerFrame) {
 
-    COVEMediaEvents.prototype.setPlayer.call(this, playerFrame);
-  };
+  // Add a handler to check for initialization
+  this.on('message', this._initialize);
 
-  /**
-   * Resets and removes playback tracking and events. Calls parent method.
-   *
-   * @param playerFrame
-   */
-  COVEPlayer.prototype.destroy = function destroy() {
-    this.off('play', this._onInitialPlay);
-    this.off('pause', this._handlePauseAtEndOfVideo);
-    this._trackingFullVideoDuration = 0;
-    COVEMediaEvents.prototype.destroy.call(this);
-  };
+  // Add a handler to run on the initial play event
+  this.on('play', this._onInitialPlay);
 
-  COVEPlayer.prototype._initialize = function _initialize() {
+  // When a pause occurs, check to see if the end of video has been reached
+  this.on('pause', this._handlePauseAtEndOfVideo);
 
-    // Unbind the initialization listener
-    this.off('message', this._initialize);
+  // Boot plugins
+  this._loadPlugins();
 
-    // Trigger an connected message to signify that the player has been
-    // successfully connected to
-    this.trigger('connected');
-  };
+  COVEMediaEvents.prototype.setPlayer.call(this, playerFrame);
+};
 
-  /**
-   * Runs any setup code that relies on a playable video being present. Will
-   * run once during the first play event of the video
-   *
-   * @private
-   */
-  COVEPlayer.prototype._onInitialPlay = function _onInitialPlay() {
+/**
+ * Resets and removes playback tracking and events. Calls parent method.
+ *
+ * @param playerFrame
+ */
+COVEPlayer.prototype.destroy = function destroy() {
+  COVEMediaEvents.prototype.destroy.call(this);
+  this.off('play', this._onInitialPlay);
+  this.off('pause', this._handlePauseAtEndOfVideo);
+  this._trackingFullVideoDuration = 0;
+};
 
-    // Unbind the initial play event immediately
-    this.off('play', this._onInitialPlay);
+COVEPlayer.prototype._initialize = function _initialize() {
 
-    // Attempt to determine the full playback duration of the video, so that it
-    // can later be used for handle end of video issues
-    this._recordFullDurationOfVideo();
-  };
+  // Unbind the initialization listener
+  this.off('message', this._initialize);
 
-  /**
-   * Requests the full video duration from the API and stores the value for
-   * later reference
-   *
-   * @private
-   */
-  COVEPlayer.prototype._recordFullDurationOfVideo = function _recordFullDurationOfVideo() {
+  // Trigger an connected message to signify that the player has been
+  // successfully connected to
+  this.trigger('connected');
+};
 
-    // Request and store the full video duration
-    this.getDuration().then(function(duration) {
-      this._trackingFullVideoDuration = duration;
-    });
-  };
+/**
+ * Runs any setup code that relies on a playable video being present. Will
+ * run once during the first play event of the video
+ *
+ * @private
+ */
+COVEPlayer.prototype._onInitialPlay = function _onInitialPlay() {
 
-  /**
-   * Special edge case handling for pause events that occur at the very end of
-   * a video. This is required to handle cases where a video finishes playback
-   * and instead of sending a complete event, sends a pause event
-   *
-   * @private
-   */
-  COVEPlayer.prototype._handlePauseAtEndOfVideo = function _handlePauseAtEndOfVideo() {
+  // Unbind the initial play event immediately
+  this.off('play', this._onInitialPlay);
 
-    // When a pause occurs, fire off a request for the current playback position.
-    this.getPosition().then(function(position) {
+  // Attempt to determine the full playback duration of the video, so that it
+  // can later be used for handle end of video issues
+  this._recordFullDurationOfVideo();
+};
 
-      // If the video has continued beyond or met its duration, trigger the on
-      // complete event
-      if (position > 0 &&
-          this._trackingFullVideoDuration > 0 &&
-          position >= this._trackingFullVideoDuration) {
-        this.trigger('complete');
-      }
-    });
-  };
+/**
+ * Requests the full video duration from the API and stores the value for
+ * later reference
+ *
+ * @private
+ */
+COVEPlayer.prototype._recordFullDurationOfVideo = function _recordFullDurationOfVideo() {
 
-  /**
-   * Loads any plugins that are defined in the settings
-   *
-   * @private
-   */
-  COVEPlayer.prototype._loadPlugins = function _loadPlugins() {
+  // Request and store the full video duration
+  this.getDuration().then(function(duration) {
+    this._trackingFullVideoDuration = duration;
+  });
+};
 
-    // Loop through each of the installed plugins and boot each one
-    Object.keys(this._options.plugins).forEach(
-      function (pluginName) {
+/**
+ * Special edge case handling for pause events that occur at the very end of
+ * a video. This is required to handle cases where a video finishes playback
+ * and instead of sending a complete event, sends a pause event
+ *
+ * @private
+ */
+COVEPlayer.prototype._handlePauseAtEndOfVideo = function _handlePauseAtEndOfVideo() {
 
-        // Run the plugin function for this COVEPlayer and boot the plugin
-        this.plugin(pluginName, this._options.plugins[pluginName], [this]);
-      }.bind(this)
-    );
-  };
+  // When a pause occurs, fire off a request for the current playback position.
+  this.getPosition().then(function(position) {
 
-  /**
-   * Installs a plugin into the list of default plugins to load for future
-   * instances of COVEPlayers
-   *
-   * @param {string} pluginName The name to load the plugin as. This is how the
-   *                            plugin will be accessed
-   * @param {function} plugin A function that returns the plugin. The function
-   *                          will be called with the COVEPlayer instance as
-   *                          the argument
-   */
-  COVEPlayer.addPlugin = function addPlugin(pluginName, plugin) {
-    privateNS.defaults.plugins[pluginName] = plugin;
-  };
+    // If the video has continued beyond or met its duration, trigger the on
+    // complete event
+    if (position > 0 &&
+        this._trackingFullVideoDuration > 0 &&
+        position >= this._trackingFullVideoDuration) {
+      this.trigger('complete');
+    }
+  });
+};
 
-  return COVEPlayer;
-})();
+/**
+ * Loads any plugins that are defined in the settings
+ *
+ * @private
+ */
+COVEPlayer.prototype._loadPlugins = function _loadPlugins() {
 
-module.exports = COVEPlayer;
+  // Loop through each of the installed plugins and boot each one
+  Object.keys(this._options.plugins).forEach(
+    function (pluginName) {
+
+      // Run the plugin function for this COVEPlayer and boot the plugin
+      this.plugin(pluginName, this._options.plugins[pluginName], [this]);
+    }.bind(this)
+  );
+};
+
+/**
+ * Installs a plugin into the list of default plugins to load for future
+ * instances of COVEPlayers
+ *
+ * @param {string} pluginName The name to load the plugin as. This is how the
+ *                            plugin will be accessed
+ * @param {function} plugin A function that returns the plugin. The function
+ *                          will be called with the COVEPlayer instance as
+ *                          the argument
+ */
+COVEPlayer.addPlugin = function addPlugin(pluginName, plugin) {
+  privateNS.defaults.plugins[pluginName] = plugin;
+};
+
+export default COVEPlayer;

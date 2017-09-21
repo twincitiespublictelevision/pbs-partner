@@ -1,22 +1,37 @@
-var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var chaiSpies = require('chai-spies');
+// var chai = require('chai');
+// var chaiAsPromised = require('chai-as-promised');
+// var chaiSpies = require('chai-spies');
 
-chai.use(chaiAsPromised);
-chai.use(chaiSpies);
+// chai.use(chaiAsPromised);
+// chai.use(chaiSpies);
 
-var COVEMessageAPI = require('./../src/COVEMessageAPI');
+// var COVEMessageAPI = require('./../src/COVEMessageAPI');
+import COVEMessageAPI from './../src/COVEMessageAPI';
 
-var expect = chai.expect;
+// var expect = chai.expect;
+
+let origin = 'https://player.pbs.org';
+
+function mockMessagePort() {
+  return {
+    postMessage: function() {}
+  }
+}
+
+function mockMessageChannel() {
+  return {
+    port1: mockMessagePort(),
+    port2: mockMessagePort()
+  }
+}
 
 function mockMessageEventFactoryFactory(source) {
-
   return function(eventData) {
     return new MessageEvent(
       'message',
       {
         data: eventData,
-        origin: 'http://player.pbs.org',
+        origin: origin,
         source: source
       }
     );
@@ -24,8 +39,8 @@ function mockMessageEventFactoryFactory(source) {
 };
 
 function mockPlayerFactory(state) {
-  var _state = state || {},
-      channel = new MessageChannel();
+  let _state = state || {},
+      channel = mockMessageChannel();
 
   return {
     contentWindow: channel.port1
@@ -33,7 +48,7 @@ function mockPlayerFactory(state) {
 };
 
 function mockWindowFactory() {
-  var x = document.createElement(null);
+  let x = document.createElement(null);
 
   x.navigator = {
     userAgent: ''
@@ -44,55 +59,52 @@ function mockWindowFactory() {
 
 describe('setPlayer', function() {
 
-  var env,
+  let env,
       player,
       api,
       eventFactory,
       noop,
-      spy;
-
-  before(function() {
-    noop = function noop() {};
-  });
+      bindMock,
+      makeEvent;
 
   beforeEach(function() {
-    spy = chai.spy(noop)
+    bindMock = jest.fn();
     player = mockPlayerFactory();
     env = mockWindowFactory();
-    env.addEventListener = spy;
+    env.addEventListener = bindMock;
     api = new COVEMessageAPI({env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
   it('should trigger create if a player is passed in', function() {
-    var createSpy = chai.spy(noop);
-    api.on('create', createSpy);
+    let createMock = jest.fn();
+    api.on('create', createMock);
     api.setPlayer(player);
 
-    return expect(createSpy).to.have.been.called.once();
+    return expect(createMock.mock.calls.length).toBe(1);
   });
 
   it('should not trigger create if a player is not passed in', function() {
-    var createSpy = chai.spy(noop);
-    api.on('create', createSpy);
+    let createMock = jest.fn();
+    api.on('create', createMock);
     api.setPlayer();
 
-    return expect(createSpy).to.have.not.been.called();
+    return expect(createMock.mock.calls.length).toBe(0);
   });
 
   it('should not trigger create if a player without a contentWindow is not passed in', function() {
-    var createSpy = chai.spy(noop);
+    let createMock = jest.fn();
     player.contentWindow = null;
-    api.on('create', createSpy);
+    api.on('create', createMock);
     api.setPlayer(player);
 
-    return expect(createSpy).to.have.not.been.called();
+    return expect(createMock.mock.calls.length).toBe(0);
   });
 
   it('should listen for message events from the env', function() {
     api.setPlayer(player);
 
-    return expect(spy).to.have.been.called.with('message');
+    return expect(bindMock.mock.calls.map(c => [c[0]])[0]).toEqual(['message']);
   });
 
   it('should listen for pagehide from the env on iPhone', function() {
@@ -100,7 +112,7 @@ describe('setPlayer', function() {
     api = new COVEMessageAPI({env: env});
     api.setPlayer(player);
 
-    return expect(spy).to.have.been.called.with('pagehide');
+    return expect(bindMock.mock.calls.map(c => [c[0]])).toEqual([['message'], ['pagehide']]);
   });
 
   it('should listen for pagehide from the env on iPad', function() {
@@ -108,7 +120,7 @@ describe('setPlayer', function() {
     api = new COVEMessageAPI({env: env});
     api.setPlayer(player);
 
-    return expect(spy).to.have.been.called.with('pagehide');
+    return expect(bindMock.mock.calls.map(c => [c[0]])).toEqual([['message'], ['pagehide']]);
   });
 
   it('should listen for beforeunload from the env on non-iOS', function() {
@@ -116,38 +128,34 @@ describe('setPlayer', function() {
     api = new COVEMessageAPI({env: env});
     api.setPlayer(player);
 
-    return expect(spy).to.have.been.called.with('beforeunload');
+    return expect(bindMock.mock.calls.map(c => [c[0]])).toEqual([['message'], ['beforeunload']]);
   });
 
   it('should trigger destroy if a player is already set', function() {
-    var destroySpy = chai.spy(noop);
+    let destroyMock = jest.fn();
     api.setPlayer(player);
-    api.on('destroy', destroySpy);
+    api.on('destroy', destroyMock);
     api.setPlayer(player);
 
-    return expect(destroySpy).to.have.been.called();
+    return expect(destroyMock.mock.calls.length).toBe(1);
   });
 
   it('should not trigger destroy if a player is not already set', function() {
-    var destroySpy = chai.spy(noop);
-    api.on('destroy', destroySpy);
+    let destroyMock = jest.fn();
+    api.on('destroy', destroyMock);
     api.setPlayer(player);
 
-    return expect(destroySpy).to.have.not.been.called();
+    return expect(destroyMock.mock.calls.length).toBe(0);
   });
 });
 
 describe('on', function() {
 
-  var env,
+  let env,
       player,
       api,
       eventFactory,
-      noop;
-
-  before(function() {
-    noop = function noop() {};
-  });
+      makeEvent;
 
   beforeEach(function() {
     player = mockPlayerFactory();
@@ -157,23 +165,23 @@ describe('on', function() {
   });
 
   it('should return a self reference', function() {
-    return expect(api).to.equal(api.on('play', function() {}));
+    return expect(api).toEqual(api.on('play', function() {}));
   });
 
   it('should call all handlers that are bound to an event', function() {
-    var spy = chai.spy(noop);
-    api.on('play', spy);
+    let handlerMock = jest.fn();
+    api.on('play', handlerMock);
     env.dispatchEvent(makeEvent('video::playing'));
 
-    return expect(spy).to.have.been.called();
+    return expect(handlerMock.mock.calls.length).toBe(1);
   });
 
   it('should not call handlers that are bound to other events', function() {
-    var spy = chai.spy(noop);
-    api.on('play', spy);
+    let handlerMock = jest.fn();
+    api.on('play', handlerMock);
     env.dispatchEvent(makeEvent('video::paused'));
 
-    return expect(spy).to.not.have.been.called();
+    return expect(handlerMock.mock.calls.length).toBe(0);
   });
 });
 
@@ -183,11 +191,7 @@ describe('off', function() {
       player,
       api,
       eventFactory,
-      noop;
-
-  before(function() {
-    noop = function noop() {};
-  });
+      makeEvent;
 
   beforeEach(function() {
     player = mockPlayerFactory();
@@ -197,128 +201,124 @@ describe('off', function() {
   });
 
   it('should return a self reference', function() {
-    return expect(api).to.equal(api.on('play', function() {}));
+    return expect(api).toEqual(api.on('play', function() {}));
   });
 
   it('should not call handlers that are unbound', function() {
-    var spy = chai.spy(noop);
-    api.on('play', spy);
-    api.off('play', spy);
+    let handlerMock = jest.fn();
+    api.on('play', handlerMock);
+    api.off('play', handlerMock);
     env.dispatchEvent(makeEvent('video::playing'));
 
-    return expect(spy).to.not.have.been.called();
+    return expect(handlerMock.mock.calls.length).toBe(0);
   });
 
   it('should unbind handler from only the passed in event', function() {
-    var spy1 = chai.spy(noop),
-        spy2 = chai.spy(noop);
-    api.on('play', spy1);
-    api.on('pause', spy2);
-    api.off('play', spy1);
+    var handlerMock1 = jest.fn(),
+        handlerMock2 = jest.fn();
+    api.on('play', handlerMock1);
+    api.on('pause', handlerMock2);
+    api.off('play', handlerMock1);
     env.dispatchEvent(makeEvent('video::paused'));
 
-    expect(spy1).to.not.have.been.called();
-    return expect(spy2).to.have.been.called();
+    expect(handlerMock1.mock.calls.length).toBe(0);
+    return expect(handlerMock2.mock.calls.length).toBe(1);
   });
 
   it('should unbind only the passed in handler', function() {
-    var spy1 = chai.spy(noop),
-        spy2 = chai.spy(noop);
-    api.on('play', spy1);
-    api.on('play', spy2);
-    api.off('play', spy1);
+    var handlerMock1 = jest.fn(),
+        handlerMock2 = jest.fn();
+    api.on('play', handlerMock1);
+    api.on('play', handlerMock2);
+    api.off('play', handlerMock1);
     env.dispatchEvent(makeEvent('video::playing'));
 
-    expect(spy1).to.not.have.been.called();
-    return expect(spy2).to.have.been.called();
+    expect(handlerMock1.mock.calls.length).toBe(0);
+    return expect(handlerMock2.mock.calls.length).toBe(1);
   });
 
   it('should unbind all handlers from event if no handler is passed in', function() {
-    var spy1 = chai.spy(noop),
-        spy2 = chai.spy(noop);
-    api.on('play', spy1);
-    api.on('play', spy2);
+    var handlerMock1 = jest.fn(),
+        handlerMock2 = jest.fn();
+    api.on('play', handlerMock1);
+    api.on('play', handlerMock2);
     api.off('play');
     env.dispatchEvent(makeEvent('video::playing'));
 
-    expect(spy1).to.not.have.been.called();
-    return expect(spy2).to.not.have.been.called();
+    expect(handlerMock1.mock.calls.length).toBe(0);
+    return expect(handlerMock2.mock.calls.length).toBe(0);
   });
 
   it('should not unbind handlers from other events if no handler is passed in', function() {
-    var spy1 = chai.spy(noop),
-        spy2 = chai.spy(noop);
-    api.on('play', spy1);
-    api.on('pause', spy2);
+    var mockHandler1 = jest.fn(),
+        mockHandler2 = jest.fn();
+    api.on('play', mockHandler1);
+    api.on('pause', mockHandler2);
     api.off('play');
     env.dispatchEvent(makeEvent('video::paused'));
 
-    expect(spy1).to.not.have.been.called();
-    return expect(spy2).to.have.been.called();
+    expect(mockHandler1.mock.calls.length).toBe(0);
+    return expect(mockHandler2.mock.calls.length).toBe(1);
   });
 
   it('should unbind all handlers from all events if no event or handler is passed in', function() {
-    var spy1 = chai.spy(noop),
-        spy2 = chai.spy(noop);
-    api.on('play', spy1);
-    api.on('pause', spy2);
+    var mockHandler1 = jest.fn(),
+        mockHandler2 = jest.fn();
+    api.on('play', mockHandler1);
+    api.on('pause', mockHandler2);
     api.off();
     env.dispatchEvent(makeEvent('video::playing'));
     env.dispatchEvent(makeEvent('video::paused'));
 
-    expect(spy1).to.not.have.been.called();
-    return expect(spy2).to.not.have.been.called();
+    expect(mockHandler1.mock.calls.length).toBe(0);
+    return expect(mockHandler2.mock.calls.length).toBe(0);
   });
 });
 
 describe('destroy', function() {
 
-  var env,
+  let env,
       player,
       api,
       eventFactory,
-      noop,
-      removeSpy;
-
-  before(function() {
-    noop = function noop() {};
-  });
+      removeMock,
+      makeEvent;
 
   beforeEach(function() {
-    removeSpy = chai.spy(noop);
+    removeMock = jest.fn();
     player = mockPlayerFactory();
     env = mockWindowFactory();
-    env.removeEventListener = removeSpy;
+    env.removeEventListener = removeMock;
     api = new COVEMessageAPI({player: player, env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
   it('should emit a destroy event', function() {
-    var spy = chai.spy(noop);
-    api.on('destroy', spy);
+    let destroyMock = jest.fn();
+    api.on('destroy', destroyMock);
     api.destroy();
 
-    return expect(spy).to.have.been.called();
+    return expect(destroyMock.mock.calls.length).toBe(1);
   });
 
   it('should unbind all bound handlers', function() {
-    var spy1 = chai.spy(noop),
-        spy2 = chai.spy(noop);
-    api.on('play', spy1);
-    api.on('pause', spy2);
+    var mockHandler1 = jest.fn(),
+        mockHandler2 = jest.fn();
+    api.on('play', mockHandler1);
+    api.on('pause', mockHandler2);
     api.destroy();
     env.dispatchEvent(makeEvent('video::playing'));
     env.dispatchEvent(makeEvent('video::paused'));
 
-    expect(spy1).to.not.have.been.called();
-    return expect(spy2).to.not.have.been.called();
+    expect(mockHandler1.mock.calls.length).toBe(0);
+    return expect(mockHandler2.mock.calls.length).toBe(0);
   });
 
   it('should stop listening for message events from the env', function() {
-    api.setPlayer(player);
+    api = new COVEMessageAPI({player: player, env: env});
     api.destroy();
 
-    return expect(removeSpy).to.have.been.called.with('message');
+    return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'beforeunload']);
   });
 
   it('should stop listening for pagehide from the env on iPhone', function() {
@@ -326,7 +326,7 @@ describe('destroy', function() {
     api = new COVEMessageAPI({player: player, env: env});
     api.destroy();
 
-    return expect(removeSpy).to.have.been.called.with('pagehide');
+    return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'pagehide']);
   });
 
   it('should stop listening for pagehide from the env on iPad', function() {
@@ -334,7 +334,7 @@ describe('destroy', function() {
     api = new COVEMessageAPI({player: player, env: env});
     api.destroy();
 
-    return expect(removeSpy).to.have.been.called.with('pagehide');
+    return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'pagehide']);
   });
 
   it('should stop listening for beforeunload from the env on non-iOS', function() {
@@ -342,7 +342,7 @@ describe('destroy', function() {
     api = new COVEMessageAPI({player: player, env: env});
     api.destroy();
 
-    return expect(removeSpy).to.have.been.called.with('beforeunload');
+    return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'beforeunload']);
   });
 });
 
@@ -352,17 +352,13 @@ describe('fetch methods', function() {
       player,
       api,
       eventFactory,
-      noop,
-      spy;
-
-  before(function() {
-    noop = function noop() {};
-  });
+      messageMock,
+      makeEvent;
 
   beforeEach(function() {
-    spy = chai.spy(noop);
+    messageMock = jest.fn();
     player = mockPlayerFactory();
-    player.contentWindow.postMessage = spy;
+    player.contentWindow.postMessage = messageMock;
     env = mockWindowFactory();
     api = new COVEMessageAPI({player: player, env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
@@ -383,14 +379,16 @@ describe('fetch methods', function() {
       it('should send a ' + test.message + ' message to the player', function() {
         api[test.method]();
 
-        return expect(spy).to.have.been.called.with(test.message);
+        return expect(messageMock.mock.calls).toEqual([[test.message, origin]]);
       });
 
       it('should resolve to ' + test.returnValue + ' when player succeeds', function() {
-        var result = api[test.method]();
+        let result = api[test.method]();
         env.dispatchEvent(makeEvent(test.message + '::' + test.returnValue));
 
-        return expect(result).to.eventually.equal(test.returnValue);
+        return result.then(function(response) {
+          return expect(response).toEqual(test.returnValue);
+        });
       });
     });
   });
@@ -402,17 +400,13 @@ describe('control methods', function() {
       player,
       api,
       eventFactory,
-      noop,
-      spy;
-
-  before(function() {
-    noop = function noop() {};
-  });
+      messageMock,
+      makeEvent;
 
   beforeEach(function() {
-    spy = chai.spy(noop);
+    messageMock = jest.fn();
     player = mockPlayerFactory();
-    player.contentWindow.postMessage = spy;
+    player.contentWindow.postMessage = messageMock;
     env = mockWindowFactory();
     api = new COVEMessageAPI({player: player, env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
@@ -423,13 +417,15 @@ describe('control methods', function() {
       api.togglePlayState();
 
       // TODO: How do we test that either play or pause was the argument
-      return expect(spy).to.have.been.called.with('play');
+      return expect(messageMock.mock.calls).toEqual([['play', origin]]);
     });
 
     it('should resolve to null', function() {
       var result = api.togglePlayState();
 
-      return expect(result).to.eventually.equal(null);
+      return result.then(function(response) {
+        expect(response).toBeNull();
+      })
     });
   });
 
@@ -438,32 +434,30 @@ describe('control methods', function() {
       var result = api.play();
       env.dispatchEvent(makeEvent('getState::paused'));
 
-      result.then(function(response) {
-        expect(spy).to.have.been.called.twice();
-        expect(spy).to.have.been.called.with('play');
-        return response;
-      });
-
-      return expect(result).to.eventually.equal(null);
+      return result
+        .then(function(response) {
+          expect(messageMock.mock.calls.length).toBe(2);
+          expect(messageMock.mock.calls).toEqual(expect.arrayContaining([['play', origin]]));
+          return expect(response).toBeNull();
+        });
     });
 
     it('should not send a play message to the player if the player is playing', function() {
       var result = api.play();
       env.dispatchEvent(makeEvent('getState::playing'));
 
-      result.then(function(response) {
-        expect(spy).to.have.been.called.once();
-        return response;
+      return result.then(function(response) {
+        expect(messageMock.mock.calls.length).toBe(1);
+        expect(messageMock.mock.calls).not.toEqual(expect.arrayContaining([['play', origin]]));
+        return expect(response).toBeNull();
       });
-
-      return expect(result).to.eventually.equal(null);
     });
 
     it('should resolve to null', function() {
       var result = api.play();
       env.dispatchEvent(makeEvent('getState::playing'));
 
-      return expect(result).to.eventually.equal(null);
+      return result.then(function(response) { return expect(response).toBeNull(); });
     });
   });
 
@@ -472,31 +466,29 @@ describe('control methods', function() {
       var result = api.pause();
       env.dispatchEvent(makeEvent('getState::playing'));
 
-      result.then(function(response) {
-        expect(spy).to.have.been.called.twice();
-        expect(spy).to.have.been.called.with('pause');
-        return response;
+      return result.then(function(response) {
+        expect(messageMock.mock.calls.length).toBe(2);
+        expect(messageMock.mock.calls).toEqual(expect.arrayContaining([['pause', origin]]));
+        return expect(response).toBeNull();
       });
-      return expect(result).to.eventually.equal(null);
     });
 
     it('should not send a pause message to the player if the player is not playing', function() {
       var result = api.pause();
       env.dispatchEvent(makeEvent('getState::paused'));
 
-      result.then(function(response) {
-        expect(spy).to.have.been.called.once();
-        return response;
+      return result.then(function(response) {
+        expect(messageMock.mock.calls.length).toBe(1);
+        expect(messageMock.mock.calls).not.toEqual(expect.arrayContaining([['pause', origin]]));
+        return expect(response).toBeNull();
       });
-
-      return expect(result).to.eventually.equal(null);
     });
 
     it('should resolve to null', function() {
       var result = api.pause();
       env.dispatchEvent(makeEvent('getState::paused'));
 
-      return expect(result).to.eventually.equal(null);
+      return result.then(function(response) { return expect(response).toBeNull(); });
     });
   });
 
@@ -516,20 +508,20 @@ describe('control methods', function() {
         it('should send a ' + test.message + ' message to the player with argument ' + test.arg, function() {
           api[test.method](test.arg);
 
-          return expect(spy).to.have.been.called.with(test.message + '::' + test.arg);
+          return expect(messageMock.mock.calls).toEqual([[test.message + '::' + test.arg, origin]]);
         });
       } else {
         it('should send a ' + test.message + ' message to the player', function() {
           api[test.method]();
 
-          return expect(spy).to.have.been.called.with(test.message);
+          return expect(messageMock.mock.calls).toEqual([[test.message, origin]]);
         });
       }
 
       it('should resolve to null', function() {
         var result = api[test.method]();
 
-        return expect(result).to.eventually.equal(null);
+        return result.then(function(response) { return expect(response).toBeNull(); });
       });
     });
   });
@@ -541,17 +533,13 @@ describe('utility', function() {
       player,
       api,
       eventFactory,
-      noop,
-      spy;
-
-  before(function() {
-    noop = function noop() {};
-  });
+      messageMock,
+      makeEvent;
 
   beforeEach(function() {
-    spy = chai.spy(noop);
+    messageMock = jest.fn();
     player = mockPlayerFactory();
-    player.contentWindow.postMessage = spy;
+    player.contentWindow.postMessage = messageMock;
     env = mockWindowFactory();
     api = new COVEMessageAPI({player: player, env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
@@ -562,14 +550,18 @@ describe('utility', function() {
       var result = api.isPlaying();
       env.dispatchEvent(makeEvent('getState::paused'));
 
-      return expect(result).to.eventually.equal(false);
+      return result.then(function(response) {
+        return expect(response).toBe(false);
+      });
     });
 
     it('should resolve to true when state is playing', function() {
       var result = api.isPlaying();
       env.dispatchEvent(makeEvent('getState::playing'));
 
-      return expect(result).to.eventually.equal(true);
+      return result.then(function(response) {
+        return expect(response).toBe(true);
+      });
     });
   });
 });

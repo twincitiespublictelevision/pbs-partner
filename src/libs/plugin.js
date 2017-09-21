@@ -1,4 +1,4 @@
-var mixin = require('./mixin.js');
+import mixin from './mixin';
 
 function Plugin() {
 }
@@ -7,7 +7,7 @@ Plugin.prototype.plugin = function plugin(namespace, plugin, args) {
   this[namespace] = new (plugin.bind.apply(plugin, [null].concat(args)));
 };
 
-module.exports = {
+export default {
   mixin: mixin(
     ['plugin'],
     Plugin

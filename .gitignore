@@ -1,8 +1,6 @@
 # Dependencies
 node_modules
+npm-debug.log
 
 # Documentation
 docs
-
-# Test Coverage Reports
-tests/coverage

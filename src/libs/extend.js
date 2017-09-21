@@ -1,4 +1,4 @@
-module.exports = function extend() {
+export default function extend() {
 
   // Pass in the objects to merge as arguments.
   // For a deep extend, set the first argument to `true`.
