@@ -1,14 +1,4 @@
-// var chai = require('chai');
-// var chaiAsPromised = require('chai-as-promised');
-// var chaiSpies = require('chai-spies');
-
-// chai.use(chaiAsPromised);
-// chai.use(chaiSpies);
-
-// var COVEMessageAPI = require('./../src/COVEMessageAPI');
 import COVEMessageAPI from './../src/COVEMessageAPI';
-
-// var expect = chai.expect;
 
 let origin = 'https://player.pbs.org';
 

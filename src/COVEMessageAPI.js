@@ -14,63 +14,61 @@ function lastElements(list, n) {
 
 // Helper function for trying to match against iPads
 function isiPad(userAgent) {
-  return userAgent.match(/iPad/i) != null;
+  return userAgent.match(/iPad/i) !== null;
 }
 
 // Helper function for trying to match against iPhones
 function isiPhone(userAgent) {
-  return userAgent.match(/iPhone/i) != null;
+  return userAgent.match(/iPhone/i) !== null;
 }
 
-// Namespace for private variables and functions
-var privateNS = {
-  defaults: { // Namespace for default options
+ // Namespace for default options
+const defaults = {
 
-    // These are commands defined by PBS or jwPlayer to not send return
-    // messages to the issuer of the message
-    noResponse: [
-      'play',
-      'pause',
-      'seek',
-      'stop',
-      'setMute',
-      'setVolume',
-      'setCurrentCaptions',
-      'setCurrentQuality'
-    ],
+  // These are commands defined by PBS or jwPlayer to not send return
+  // messages to the issuer of the message
+  noResponse: [
+    'play',
+    'pause',
+    'seek',
+    'stop',
+    'setMute',
+    'setVolume',
+    'setCurrentCaptions',
+    'setCurrentQuality'
+  ],
 
-    // The player origin can not be safely be determined programatically. It
-    // is hard set here so communicate only happens with the PBS player
-    playerOrigin: 'https://player.pbs.org',
+  // The player origin can not be safely be determined programatically. It
+  // is hard set here so communicate only happens with the PBS player
+  playerOrigin: 'https://player.pbs.org',
 
-    // Define a map of the PBS event namespace to the TPT event namespace
-    playerEvents: {
-      'initialized': 'initialize',
-      'video::playing': 'play',
-      'video::idle': 'stop',
-      'video::paused': 'pause',
-      'video::finished': 'complete',
-      'video::seeking': 'seek',
-      'ad::started': 'adPlay',
-      'ad::complete': 'adComplete'
-    },
+  // Define a map of the PBS event namespace to the TPT event namespace
+  playerEvents: {
+    'initialized': 'initialize',
+    'video::playing': 'play',
+    'video::idle': 'stop',
+    'video::paused': 'pause',
+    'video::finished': 'complete',
+    'video::seeking': 'seek',
+    'ad::started': 'adPlay',
+    'ad::complete': 'adComplete'
+  },
 
-    // Define a whitelist of supported events
-    allowedEvents: [
-      'create',
-      'destroy',
-      'initialize',
-      'play',
-      'stop',
-      'pause',
-      'complete',
-      'seek',
-      'adPlay',
-      'adComplete',
-      'error',
-      'message' // Message is a generic event that triggers on every message
-    ]
-  }
+  // Define a whitelist of supported events
+  allowedEvents: [
+    'create',
+    'destroy',
+    'initialize',
+    'play',
+    'stop',
+    'pause',
+    'complete',
+    'seek',
+    'adPlay',
+    'adComplete',
+    'error',
+    'message' // Message is a generic event that triggers on every message
+  ]
 };
 
 /**
@@ -95,7 +93,7 @@ var privateNS = {
 function COVEMessageAPI(options) {
 
   // Initialize options
-  this._options = extend({}, privateNS.defaults, (options || {}));
+  this._options = extend({}, defaults, (options || {}));
 
   // Set the environment of the player
   this._env = this._options.env || window;
@@ -118,7 +116,7 @@ COVEMessageAPI.prototype.setPlayer = function setPlayer(playerFrame) {
   if (this._player && this._player.contentWindow) {
 
     // Make sure there are no existing bindings
-    COVEMessageAPI.prototype.destroy.call(this);
+    this.destroy();
   }
 
   // Create a reference to the UI container
