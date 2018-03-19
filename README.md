@@ -6,9 +6,10 @@ let COVEPlayer = require('COVEPlayer');
 COVEPlayer.addPlugin('analytics', require('./plugins/COVEGoogleAnalytics.js'));
 
 let player = new COVEPlayer();
+player.setPlayer(document.getElementById('video-player'));
 
-this.player.analytics.setTrackingFunction(ga);
-this.player.analytics.addMediaTracking(
+player.analytics.setTrackingFunction(ga);
+player.analytics.addMediaTracking(
   'Video Player',
   'Label for Video',
   'metric1',
