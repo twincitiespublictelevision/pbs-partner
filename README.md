@@ -1,7 +1,7 @@
 # cove-partner
 
 ### Example of using GA plugin
-```
+```javascript
 let COVEPlayer = require('COVEPlayer');
 COVEPlayer.addPlugin('analytics', require('./plugins/COVEGoogleAnalytics.js'));
 
@@ -10,12 +10,12 @@ player.setPlayer(document.getElementById('video-player'));
 
 player.analytics.setTrackingFunction(ga);
 player.analytics.addMediaTracking(
-  'Video Player',
-  'Label for Video',
+  'Video Player', // Event Category
+  'Label for Video', // Event Label
   'metric1',
   {
-    start: 'MediaStart',
-    stop: 'MediaStop'
+    start: 'MediaStart', // Event Action - Start
+    stop: 'MediaStop' // Event Action - Stop
   }
 );
 
