@@ -6,6 +6,7 @@ module.exports = {
     path: __dirname,
     filename: 'dist/covepartner.min.js',
     library: 'COVEPartner',
+    libraryExport: 'default',
     libraryTarget: 'umd'
   },
   module: {

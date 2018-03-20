@@ -109,7 +109,7 @@ COVEPlayer.prototype._recordFullDurationOfVideo = function _recordFullDurationOf
   // Request and store the full video duration
   this.getDuration().then(function(duration) {
     this._trackingFullVideoDuration = duration;
-  });
+  }.bind(this));
 };
 
 /**
@@ -131,7 +131,7 @@ COVEPlayer.prototype._handlePauseAtEndOfVideo = function _handlePauseAtEndOfVide
         position >= this._trackingFullVideoDuration) {
       this.trigger('complete');
     }
-  });
+  }.bind(this));
 };
 
 /**
