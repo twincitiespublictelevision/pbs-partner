@@ -2,7 +2,7 @@
 
 ### Example of using dist version
 ```javascript
-let player = new COVEPartner.default();
+let player = new COVEPartner();
 player.setPlayer(document.getElementById('video-player'));
 
 player.analytics.setTrackingFunction(ga);
