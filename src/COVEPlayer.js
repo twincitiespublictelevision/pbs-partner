@@ -1,5 +1,6 @@
 // var COVEMediaEvents = require('./COVEMediaEvents');
 import COVEMediaEvents from './COVEMediaEvents';
+import COVEGoogleAnalytics from './plugins/COVEGoogleAnalytics';
 
 import extend from './libs/extend';
 
@@ -163,5 +164,8 @@ COVEPlayer.prototype._loadPlugins = function _loadPlugins() {
 COVEPlayer.addPlugin = function addPlugin(pluginName, plugin) {
   privateNS.defaults.plugins[pluginName] = plugin;
 };
+
+// By default install the Google Analytics plugin
+COVEPlayer.addPlugin('analytics', COVEGoogleAnalytics);
 
 export default COVEPlayer;

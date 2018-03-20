@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 
 module.exports = {
-  entry: './src/COVEMessageAPI.js',
+  entry: './src/index.js',
   output: {
     path: __dirname,
     filename: 'dist/covepartner.min.js',

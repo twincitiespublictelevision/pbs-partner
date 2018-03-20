@@ -1,6 +1,4 @@
-'use strict';
-
-var extend = require('../libs/extend.js');
+import extend from './../libs/extend';
 
 /**
  * Google Analytics tracking for MediaEvents
@@ -178,4 +176,4 @@ COVEGoogleAnalytics.prototype._trackMediaStop = function _trackMediaStop(event) 
   }
 };
 
-module.exports = COVEGoogleAnalytics;
+export default COVEGoogleAnalytics;
