@@ -1,11 +1,8 @@
 # cove-partner
 
-### Example of using GA plugin
+### Example of using dist version
 ```javascript
-let COVEPlayer = require('COVEPlayer');
-COVEPlayer.addPlugin('analytics', require('./plugins/COVEGoogleAnalytics.js'));
-
-let player = new COVEPlayer();
+let player = new COVEPartner.default();
 player.setPlayer(document.getElementById('video-player'));
 
 player.analytics.setTrackingFunction(ga);
