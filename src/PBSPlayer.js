@@ -1,5 +1,5 @@
 import PBSMediaEvents from './PBSMediaEvents';
-import PBSGoogleAnalytics from './plugins/PBSGoogleAnalytics';
+import GoogleAnalytics from './plugins/GoogleAnalytics';
 
 import extend from './libs/extend';
 
@@ -166,6 +166,6 @@ PBSPlayer.addPlugin = function addPlugin(pluginName, plugin) {
 };
 
 // By default install the Google Analytics plugin
-PBSPlayer.addPlugin('analytics', PBSGoogleAnalytics);
+PBSPlayer.addPlugin('analytics', GoogleAnalytics);
 
 export default PBSPlayer;

@@ -5,7 +5,7 @@ import extend from './../libs/extend';
  *
  * @constructor
  */
-var PBSGoogleAnalytics = function(PBSMediaEvents) {
+let GoogleAnalytics = function(PBSMediaEvents) {
 
   this._PBSMediaEvents = PBSMediaEvents;
 
@@ -30,7 +30,7 @@ var PBSGoogleAnalytics = function(PBSMediaEvents) {
  * @param {function} fn A function that supports the Google Analytics tracking
  *                      syntax
  */
-PBSGoogleAnalytics.prototype.setTrackingFunction = function setTrackingFunction(fn) {
+GoogleAnalytics.prototype.setTrackingFunction = function setTrackingFunction(fn) {
   this._tracker = fn;
 };
 
@@ -45,7 +45,7 @@ PBSGoogleAnalytics.prototype.setTrackingFunction = function setTrackingFunction(
  * @param {string} metric The name of the metric to track to
  * @private
  */
-PBSGoogleAnalytics.prototype._addTracking = function _addTracking(event, category, label, metric, actionOverride) {
+GoogleAnalytics.prototype._addTracking = function _addTracking(event, category, label, metric, actionOverride) {
   this._trackingTargets[event].push({
     category: category,
     label: label,
@@ -63,7 +63,7 @@ PBSGoogleAnalytics.prototype._addTracking = function _addTracking(event, categor
  * @param {string} label The label that should be tracked with
  * @param {string} metric The name of the metric to track to
  */
-PBSGoogleAnalytics.prototype.addMediaStartTracking = function addMediaStartTracking(category, label, metric, actionOverride) {
+GoogleAnalytics.prototype.addMediaStartTracking = function addMediaStartTracking(category, label, metric, actionOverride) {
   this._addTracking('MediaStart', category, label, metric, actionOverride);
 };
 
@@ -76,7 +76,7 @@ PBSGoogleAnalytics.prototype.addMediaStartTracking = function addMediaStartTrack
  * @param {string} label The label that should be tracked with
  * @param {string} metric The name of the metric to track to
  */
-PBSGoogleAnalytics.prototype.addMediaStopTracking = function addMediaStopTracking(category, label, metric, actionOverride) {
+GoogleAnalytics.prototype.addMediaStopTracking = function addMediaStopTracking(category, label, metric, actionOverride) {
   this._addTracking('MediaStop', category, label, metric, actionOverride);
 };
 
@@ -90,7 +90,7 @@ PBSGoogleAnalytics.prototype.addMediaStopTracking = function addMediaStopTrackin
  * @param {string} metric The name of the metric to track to
  * @param {object} [actionOverrides] Optionally specify custom start and stop tracking actions
  */
-PBSGoogleAnalytics.prototype.addMediaTracking = function addMediaStopTracking(category, label, metric, actionOverrides) {
+GoogleAnalytics.prototype.addMediaTracking = function addMediaStopTracking(category, label, metric, actionOverrides) {
 
   // Loop through the Media
   this.addMediaStartTracking(category, label, metric, actionOverrides && actionOverrides.start || undefined);
@@ -104,7 +104,7 @@ PBSGoogleAnalytics.prototype.addMediaTracking = function addMediaStopTracking(ca
  *
  * @private
  */
-PBSGoogleAnalytics.prototype._trackMediaStart = function startTracking() {
+GoogleAnalytics.prototype._trackMediaStart = function startTracking() {
 
   // If a tracker has been defined then track to it
   if (this._tracker) {
@@ -137,7 +137,7 @@ PBSGoogleAnalytics.prototype._trackMediaStart = function startTracking() {
  * @param {object} event An object containing data sent with the event
  * @private
  */
-PBSGoogleAnalytics.prototype._trackMediaStop = function _trackMediaStop(event) {
+GoogleAnalytics.prototype._trackMediaStop = function _trackMediaStop(event) {
 
   // Since this event is often called during a potentially troublesome time
   // (ie. unload of the page), attempt to use the beacon method if it is
@@ -175,4 +175,4 @@ PBSGoogleAnalytics.prototype._trackMediaStop = function _trackMediaStop(event) {
   }
 };
 
-export default PBSGoogleAnalytics;
+export default GoogleAnalytics;

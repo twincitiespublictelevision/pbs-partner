@@ -81,6 +81,7 @@ const defaults = {
  * an existing DOM element or a string selector for and existing DOM element.
  *
  * @param {object} [options] An options object for configuration
+ * @param {string} [options.id] An identifier for the video
  * @param {string|DOMElement} [options.player] The player instance to connect to
  * @param {string} [options.playerOrigin] The origin of the player. If this is
  *                                        not passed in then the PBS https
@@ -99,11 +100,24 @@ function PBSMessageAPI(options) {
   // Set the environment of the player
   this._env = this._options.env || window;
 
+  // Set the internal video id if it is provided
+  if (this._options.id) {
+    this.setVideoId(this._options.id);
+  }
+
   // Create a reference to the UI container if it is available
   if (this._options.player) {
     this.setPlayer(this._options.player);
   }
 }
+
+PBSMessageAPI.prototype.setVideoId = function setVideoId(id) {
+  this._id = id;
+};
+
+PBSMessageAPI.prototype.getVideoId = function getVideoId() {
+  return this._id;
+};
 
 /**
  * Sets the play DOM element that should be communicated with and sets up the
