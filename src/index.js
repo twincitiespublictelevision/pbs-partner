@@ -1,4 +1,3 @@
-import COVEPlayer from './COVEPlayer';
-// module.exports = require('./COVEPlayer');
+import PBSPlayer from './PBSPlayer';
 
-export default COVEPlayer;
+export default PBSPlayer;
