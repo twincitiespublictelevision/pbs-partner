@@ -1,15 +1,15 @@
-import COVEMessageAPI from './COVEMessageAPI';
+import PBSMessageAPI from './PBSMessageAPI';
 
 /**
  * Triggers media events based on the messages sent from a COVE Player
  *
- * @param {object} [options] Passes to COVEMessageAPI. See constructor.
+ * @param {object} [options] Passes to PBSMessageAPI. See constructor.
  * @constructor
  */
-function COVEMediaEvents(options) {
+function PBSMediaEvents(options) {
 
   // Call the parent constructor
-  COVEMessageAPI.call(this, options);
+  PBSMessageAPI.call(this, options);
 
   // Add MediaStart and MediaStop as allowed events to the MessageAPI
   this._options.allowedEvents = this._options.allowedEvents.concat([
@@ -22,26 +22,26 @@ function COVEMediaEvents(options) {
 }
 
 // Extend from the COVEMessagingAPI prototype
-COVEMediaEvents.prototype = Object.create(COVEMessageAPI.prototype);
+PBSMediaEvents.prototype = Object.create(PBSMessageAPI.prototype);
 
 // Set the "constructor" property to refer to COVEPlayer
-COVEMediaEvents.prototype.constructor = COVEMediaEvents;
+PBSMediaEvents.prototype.constructor = PBSMediaEvents;
 
 /**
  * Resets the media event tracking. Calls parent method.
  *
  * @param playerFrame
  */
-COVEMediaEvents.prototype.setPlayer = function setPlayer(playerFrame) {
+PBSMediaEvents.prototype.setPlayer = function setPlayer(playerFrame) {
   this._resetTracking();
-  COVEMessageAPI.prototype.setPlayer.call(this, playerFrame);
+  PBSMessageAPI.prototype.setPlayer.call(this, playerFrame);
 };
 
 /**
  * Resets the media event tracking. Calls parent method.
  */
-COVEMediaEvents.prototype.destroy = function destroy() {
-  COVEMessageAPI.prototype.destroy.call(this);
+PBSMediaEvents.prototype.destroy = function destroy() {
+  PBSMessageAPI.prototype.destroy.call(this);
   this._resetTracking();
 };
 
@@ -51,7 +51,7 @@ COVEMediaEvents.prototype.destroy = function destroy() {
  *
  * @private
  */
-COVEMediaEvents.prototype._resetTracking = function _resetTracking() {
+PBSMediaEvents.prototype._resetTracking = function _resetTracking() {
 
   // Make sure if an interval is currently tracking playback duration that it
   // is stopped
@@ -93,7 +93,7 @@ COVEMediaEvents.prototype._resetTracking = function _resetTracking() {
  *
  * @private
  */
-COVEMediaEvents.prototype._onInitialPlayEvent = function _onInitialPlayEvent() {
+PBSMediaEvents.prototype._onInitialPlayEvent = function _onInitialPlayEvent() {
 
   // Remove this handler from future play events
   this.off('play', this._onInitialPlayEvent);
@@ -113,7 +113,7 @@ COVEMediaEvents.prototype._onInitialPlayEvent = function _onInitialPlayEvent() {
  *
  * @private
  */
-COVEMediaEvents.prototype._onVideoEnd = function _trackMediaStop() {
+PBSMediaEvents.prototype._onVideoEnd = function _trackMediaStop() {
 
   // Trigger a media stop event that will carry with it the number of seconds
   // played back as well as the furthest reached number of seconds at any given
@@ -132,7 +132,7 @@ COVEMediaEvents.prototype._onVideoEnd = function _trackMediaStop() {
  *
  * @private
  */
-COVEMediaEvents.prototype._startRecordingPlaybackData = function _startRecordingPlaybackData() {
+PBSMediaEvents.prototype._startRecordingPlaybackData = function _startRecordingPlaybackData() {
 
   // Make sure the existing interval is stopped before starting an interval
   clearInterval(this._playedAmountIntervalId);
@@ -152,7 +152,7 @@ COVEMediaEvents.prototype._startRecordingPlaybackData = function _startRecording
  *
  * @private
  */
-COVEMediaEvents.prototype._pauseRecordingPlaybackData = function _pauseRecordingPlaybackData() {
+PBSMediaEvents.prototype._pauseRecordingPlaybackData = function _pauseRecordingPlaybackData() {
 
   // If there is currently an interval running, stop it
   clearInterval(this._playedAmountIntervalId);
@@ -166,7 +166,7 @@ COVEMediaEvents.prototype._pauseRecordingPlaybackData = function _pauseRecording
  *
  * @private
  */
-COVEMediaEvents.prototype._recordPlaybackData = function _recordPlaybackData() {
+PBSMediaEvents.prototype._recordPlaybackData = function _recordPlaybackData() {
 
   // Get the current time and compute the delta from the last run time
   var date = Date.now(),
@@ -192,4 +192,4 @@ COVEMediaEvents.prototype._recordPlaybackData = function _recordPlaybackData() {
   );
 };
 
-export default COVEMediaEvents;
+export default PBSMediaEvents;

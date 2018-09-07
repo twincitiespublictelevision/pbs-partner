@@ -75,7 +75,7 @@ const defaults = {
  * connection setup and the communication channel. Provides helper methods for
  * sending messages and retrieving information from the player.
  *
- * Initializes a COVEMessageAPI. Requires a single option, player, that is either
+ * Initializes a PBSMessageAPI. Requires a single option, player, that is either
  * an existing DOM element or a string selector for and existing DOM element.
  *
  * @param {object} [options] An options object for configuration
@@ -89,7 +89,7 @@ const defaults = {
  *                               looked for
  * @constructor
  */
-function COVEMessageAPI(options) {
+function PBSMessageAPI(options) {
 
   // Initialize options
   this._options = extend({}, defaults, (options || {}));
@@ -109,7 +109,7 @@ function COVEMessageAPI(options) {
  *
  * @param playerFrame
  */
-COVEMessageAPI.prototype.setPlayer = function setPlayer(playerFrame) {
+PBSMessageAPI.prototype.setPlayer = function setPlayer(playerFrame) {
 
   // Do not destroy if the player is not set
   if (this._player && this._player.contentWindow) {
@@ -141,7 +141,7 @@ COVEMessageAPI.prototype.setPlayer = function setPlayer(playerFrame) {
 
     // Create a bound page leave handler to ensure it is called with the
     // messaging API as the context
-    this._pageLeaveHandler = COVEMessageAPI.prototype.destroy.bind(this);
+    this._pageLeaveHandler = PBSMessageAPI.prototype.destroy.bind(this);
 
     // Open up a communication channel between the window and this player
     this._env.addEventListener(
@@ -164,12 +164,12 @@ COVEMessageAPI.prototype.setPlayer = function setPlayer(playerFrame) {
 /**
  * An event channel function that handles message events and checks to see if
  * they belong to the PBS Cove API. If they do, they are then triggered
- * directly on the bound COVEMessageAPI
+ * directly on the bound PBSMessageAPI
  *
  * @param event
  * @private
  */
-COVEMessageAPI.prototype._eventChannel = function _eventChannel(event) {
+PBSMessageAPI.prototype._eventChannel = function _eventChannel(event) {
 
   // IE9 requires the data to be extracted here as it will fail when trying to
   // set the data property of the event in the try / catch below
@@ -204,7 +204,7 @@ COVEMessageAPI.prototype._eventChannel = function _eventChannel(event) {
  * @returns {boolean} True if this event is valid and belongs to the player
  * @private
  */
-COVEMessageAPI.prototype._validateEvent = function _validateEvent(event) {
+PBSMessageAPI.prototype._validateEvent = function _validateEvent(event) {
 
   // Make sure that the message came from this video player instance
   // and that the iframe has not been hijacked
@@ -214,13 +214,13 @@ COVEMessageAPI.prototype._validateEvent = function _validateEvent(event) {
 
 /**
  * Takes a message from the PBS Cove API and triggers the corresponding
- * COVEMessageAPI event. If the message is an unknown message, the message
+ * PBSMessageAPI event. If the message is an unknown message, the message
  * event will be ignored.
  *
  * @param {String} eventData The message from PBS
  * @private
  */
-COVEMessageAPI.prototype._triggerEvent = function _triggerEvent(eventData) {
+PBSMessageAPI.prototype._triggerEvent = function _triggerEvent(eventData) {
 
   // If this is an event that is mapped, trigger it
   if (typeof this._options.playerEvents[eventData] !== 'undefined' ||
@@ -233,15 +233,15 @@ COVEMessageAPI.prototype._triggerEvent = function _triggerEvent(eventData) {
 };
 
 /**
- * Binds a COVEMessageAPI event to the underlying player DOM element. When a
- * COVEMessageAPI event is triggered on the underlying element it will fire the
+ * Binds a PBSMessageAPI event to the underlying player DOM element. When a
+ * PBSMessageAPI event is triggered on the underlying element it will fire the
  * handler passed in here
  *
  * @param {String} event The name of the event to bind
  * @param {Function} handler The function to bind to the event
  * @private
  */
-COVEMessageAPI.prototype._bindEvent = function _bindEvent(event, handler) {
+PBSMessageAPI.prototype._bindEvent = function _bindEvent(event, handler) {
 
   // Make sure this is a supported event before binding
   if (this._options.allowedEvents.indexOf(event) !== -1) {
@@ -259,7 +259,7 @@ COVEMessageAPI.prototype._bindEvent = function _bindEvent(event, handler) {
  * @param {Function} handler The function to unbind from the event
  * @private
  */
-COVEMessageAPI.prototype._unbindEvent = function _unbindEvent(event, handler) {
+PBSMessageAPI.prototype._unbindEvent = function _unbindEvent(event, handler) {
 
   // Blindly remove the handler, if it does not exist, oh well
   this.unbind(
@@ -283,14 +283,14 @@ COVEMessageAPI.prototype._unbindEvent = function _unbindEvent(event, handler) {
  *                           one that Cove does not send a response to
  * @private
  */
-COVEMessageAPI.prototype._send = function _send(message, value) {
+PBSMessageAPI.prototype._send = function _send(message, value) {
 
   // Check to make sure that we can access the communication channel
   if (!this._player || !this._player.contentWindow) {
     return Promise.reject(
       {
         status: false,
-        message: 'COVEMessageAPI failed to connect to a player instance'
+        message: 'PBSMessageAPI failed to connect to a player instance'
       }
     );
   }
@@ -359,9 +359,9 @@ COVEMessageAPI.prototype._send = function _send(message, value) {
  *
  * @param {String} event The name of the event to bind
  * @param {Function} handler The function to bind to the event
- * @returns {COVEMessageAPI}
+ * @returns {PBSMessageAPI}
  */
-COVEMessageAPI.prototype.on = function on(event, handler) {
+PBSMessageAPI.prototype.on = function on(event, handler) {
   this._bindEvent(event, handler);
 
   return this;
@@ -372,9 +372,9 @@ COVEMessageAPI.prototype.on = function on(event, handler) {
  *
  * @param {String} event The name of the event to unbind from
  * @param {Function} handler The function to unbind from the event
- * @returns {COVEMessageAPI}
+ * @returns {PBSMessageAPI}
  */
-COVEMessageAPI.prototype.off = function off(event, handler) {
+PBSMessageAPI.prototype.off = function off(event, handler) {
   this._unbindEvent(event, handler);
 
   return this;
@@ -390,7 +390,7 @@ COVEMessageAPI.prototype.off = function off(event, handler) {
  *
  * @private
  */
-COVEMessageAPI.prototype._testMessageType = function _testMessageType(messageObj, message) {
+PBSMessageAPI.prototype._testMessageType = function _testMessageType(messageObj, message) {
 
   // Extract the raw message
   var data = messageObj.data;
@@ -412,7 +412,7 @@ COVEMessageAPI.prototype._testMessageType = function _testMessageType(messageObj
  *
  * @private
  */
-COVEMessageAPI.prototype._getMessageValue = function _getMessageValue(messageObj) {
+PBSMessageAPI.prototype._getMessageValue = function _getMessageValue(messageObj) {
 
   // Extract the raw message
   var data = messageObj.data;
@@ -451,7 +451,7 @@ COVEMessageAPI.prototype._getMessageValue = function _getMessageValue(messageObj
  *
  * @private
  */
-COVEMessageAPI.prototype._getResponseValue = function _getResponseValue(message, defaultValue) {
+PBSMessageAPI.prototype._getResponseValue = function _getResponseValue(message, defaultValue) {
 
   if (typeof defaultValue === 'undefined') {
     defaultValue = null;
@@ -475,7 +475,7 @@ COVEMessageAPI.prototype._getResponseValue = function _getResponseValue(message,
  *
  * @returns {Promise.<string|null>}
  */
-COVEMessageAPI.prototype.getState = function getState() {
+PBSMessageAPI.prototype.getState = function getState() {
   return this._getResponseValue('getState');
 };
 
@@ -484,7 +484,7 @@ COVEMessageAPI.prototype.getState = function getState() {
  *
  * @returns {Promise.<boolean>}
  */
-COVEMessageAPI.prototype.isPlaying = function isPlaying() {
+PBSMessageAPI.prototype.isPlaying = function isPlaying() {
   return this.getState().then(function(state) {
     return state === 'playing';
   });
@@ -495,7 +495,7 @@ COVEMessageAPI.prototype.isPlaying = function isPlaying() {
  *
  * @returns {Promise.<int>}
  */
-COVEMessageAPI.prototype.getPosition = function getPosition() {
+PBSMessageAPI.prototype.getPosition = function getPosition() {
   return this._getResponseValue('getPosition', 0);
 };
 
@@ -504,7 +504,7 @@ COVEMessageAPI.prototype.getPosition = function getPosition() {
  *
  * @returns {Promise.<int>}
  */
-COVEMessageAPI.prototype.getDuration = function getDuration() {
+PBSMessageAPI.prototype.getDuration = function getDuration() {
   return this._getResponseValue('getDuration', 0);
 };
 
@@ -513,7 +513,7 @@ COVEMessageAPI.prototype.getDuration = function getDuration() {
  *
  * @returns {Promise.<boolean>}
  */
-COVEMessageAPI.prototype.getMute = function getMute() {
+PBSMessageAPI.prototype.getMute = function getMute() {
   return this._getResponseValue('getMute', false);
 };
 
@@ -522,7 +522,7 @@ COVEMessageAPI.prototype.getMute = function getMute() {
  *
  * @returns {Promise.<int>}
  */
-COVEMessageAPI.prototype.getVolume = function getVolume() {
+PBSMessageAPI.prototype.getVolume = function getVolume() {
   return this._getResponseValue('getVolume', 0);
 };
 
@@ -532,7 +532,7 @@ COVEMessageAPI.prototype.getVolume = function getVolume() {
  *
  * @returns {Promise.<int>}
  */
-COVEMessageAPI.prototype.getCurrentCaptions = function getCurrentCaptions() {
+PBSMessageAPI.prototype.getCurrentCaptions = function getCurrentCaptions() {
   return this._getResponseValue('getCurrentCaptions', 0);
 };
 
@@ -541,7 +541,7 @@ COVEMessageAPI.prototype.getCurrentCaptions = function getCurrentCaptions() {
  *
  * @returns {Promise.<int>}
  */
-COVEMessageAPI.prototype.getCurrentQuality = function getCurrentQuality() {
+PBSMessageAPI.prototype.getCurrentQuality = function getCurrentQuality() {
   return this._getResponseValue('getCurrentQuality', 0);
 };
 
@@ -554,7 +554,7 @@ COVEMessageAPI.prototype.getCurrentQuality = function getCurrentQuality() {
  *
  * @returns {Promise.<null>}
  */
-COVEMessageAPI.prototype.togglePlayState = function togglePlayState() {
+PBSMessageAPI.prototype.togglePlayState = function togglePlayState() {
   return this._send('play');
 };
 
@@ -563,7 +563,7 @@ COVEMessageAPI.prototype.togglePlayState = function togglePlayState() {
  *
  * @returns {Promise.<null>}
  */
-COVEMessageAPI.prototype.play = function play() {
+PBSMessageAPI.prototype.play = function play() {
 
   return this.isPlaying().then(
     function playVideoIfNotPlaying(isPlaying) {
@@ -579,7 +579,7 @@ COVEMessageAPI.prototype.play = function play() {
  *
  * @returns {Promise.<null>}
  */
-COVEMessageAPI.prototype.pause = function pause() {
+PBSMessageAPI.prototype.pause = function pause() {
 
   return this.isPlaying().then(
     function pauseVideoIfNotPaused(isPlaying) {
@@ -596,7 +596,7 @@ COVEMessageAPI.prototype.pause = function pause() {
  *
  * @returns {Promise.<null>}
  */
-COVEMessageAPI.prototype.stop = function stop() {
+PBSMessageAPI.prototype.stop = function stop() {
   return this._send('stop');
 };
 
@@ -607,7 +607,7 @@ COVEMessageAPI.prototype.stop = function stop() {
  * @param {Number} position The position to seek to
  * @returns {Promise.<null>}
  */
-COVEMessageAPI.prototype.seek = function seek(position) {
+PBSMessageAPI.prototype.seek = function seek(position) {
   return this._send('seek', position);
 };
 
@@ -617,7 +617,7 @@ COVEMessageAPI.prototype.seek = function seek(position) {
  *
  * @returns {Promise.<null>}
  */
-COVEMessageAPI.prototype.setMute = function setMute() {
+PBSMessageAPI.prototype.setMute = function setMute() {
   return this._send('setMute');
 };
 
@@ -627,7 +627,7 @@ COVEMessageAPI.prototype.setMute = function setMute() {
  * @param {Number} volumePercentage The volume to set the player to
  * @returns {Promise.<null>}
  */
-COVEMessageAPI.prototype.setVolume = function setVolume(volumePercentage) {
+PBSMessageAPI.prototype.setVolume = function setVolume(volumePercentage) {
   return this._send('setVolume', volumePercentage);
 };
 
@@ -639,7 +639,7 @@ COVEMessageAPI.prototype.setVolume = function setVolume(volumePercentage) {
  *                       selected captions to
  * @returns {Promise.<null>}
  */
-COVEMessageAPI.prototype.setCurrentCaptions = function setCurrentCaptions(index) {
+PBSMessageAPI.prototype.setCurrentCaptions = function setCurrentCaptions(index) {
   return this._send('setCurrentCaptions', index);
 };
 
@@ -650,16 +650,16 @@ COVEMessageAPI.prototype.setCurrentCaptions = function setCurrentCaptions(index)
  * @param {Number} index The index of the quality level to set.
  * @returns {Promise.<null>}
  */
-COVEMessageAPI.prototype.setCurrentQuality = function setCurrentQuality(index) {
+PBSMessageAPI.prototype.setCurrentQuality = function setCurrentQuality(index) {
   return this._send('setCurrentQuality', index);
 };
 
 /**
- * Destroys the messaging channel for the COVEMessageAPI so that the event handler
+ * Destroys the messaging channel for the PBSMessageAPI so that the event handler
  * that traps messages does not exist continually. Removes all bound events
  * from the underlying player element
  */
-COVEMessageAPI.prototype.destroy = function destroy() {
+PBSMessageAPI.prototype.destroy = function destroy() {
 
   // Trigger the destroy event
   this._triggerEvent('destroy');
@@ -677,4 +677,4 @@ COVEMessageAPI.prototype.destroy = function destroy() {
   }
 };
 
-export default Plugin.mixin(MicroEvent.mixin(COVEMessageAPI))
+export default Plugin.mixin(MicroEvent.mixin(PBSMessageAPI))

@@ -1,4 +1,4 @@
-import COVEMediaEvents from './COVEMediaEvents';
+import PBSMediaEvents from './PBSMediaEvents';
 import COVEGoogleAnalytics from './plugins/COVEGoogleAnalytics';
 
 import extend from './libs/extend';
@@ -13,13 +13,13 @@ const privateNS = {
 /**
  * An interface for binding to and interacting with an embedded COVE player
  *
- * @param {object} [options] Passes to COVEMediaEvents. See constructor.
+ * @param {object} [options] Passes to PBSMediaEvents. See constructor.
  * @constructor
  */
-function COVEPlayer(options) {
+function PBSPlayer(options) {
 
   // Call the parent constructor
-  COVEMediaEvents.call(this, this.options);
+  PBSMediaEvents.call(this, this.options);
 
   // Add connected as an allowed event for the MessageAPI
   this._options.allowedEvents = this._options.allowedEvents.concat([
@@ -31,10 +31,10 @@ function COVEPlayer(options) {
 }
 
 // Extend from the COVEMessagingAPI prototype
-COVEPlayer.prototype = Object.create(COVEMediaEvents.prototype);
+PBSPlayer.prototype = Object.create(PBSMediaEvents.prototype);
 
-// Set the "constructor" property to refer to COVEPlayer
-COVEPlayer.prototype.constructor = COVEPlayer;
+// Set the "constructor" property to refer to PBSPlayer
+PBSPlayer.prototype.constructor = PBSPlayer;
 
 /**
  * Sets up playback tracking and events. Loads plugins for the player. Calls
@@ -42,7 +42,7 @@ COVEPlayer.prototype.constructor = COVEPlayer;
  *
  * @param playerFrame
  */
-COVEPlayer.prototype.setPlayer = function setPlayer(playerFrame) {
+PBSPlayer.prototype.setPlayer = function setPlayer(playerFrame) {
 
   // Add a handler to check for initialization
   this.on('message', this._initialize);
@@ -56,20 +56,20 @@ COVEPlayer.prototype.setPlayer = function setPlayer(playerFrame) {
   // Boot plugins
   this._loadPlugins();
 
-  COVEMediaEvents.prototype.setPlayer.call(this, playerFrame);
+  PBSMediaEvents.prototype.setPlayer.call(this, playerFrame);
 };
 
 /**
  * Resets and removes playback tracking and events. Calls parent method.
  */
-COVEPlayer.prototype.destroy = function destroy() {
-  COVEMediaEvents.prototype.destroy.call(this);
+PBSPlayer.prototype.destroy = function destroy() {
+  PBSMediaEvents.prototype.destroy.call(this);
   this.off('play', this._onInitialPlay);
   this.off('pause', this._handlePauseAtEndOfVideo);
   this._trackingFullVideoDuration = 0;
 };
 
-COVEPlayer.prototype._initialize = function _initialize() {
+PBSPlayer.prototype._initialize = function _initialize() {
 
   // Unbind the initialization listener
   this.off('message', this._initialize);
@@ -85,7 +85,7 @@ COVEPlayer.prototype._initialize = function _initialize() {
  *
  * @private
  */
-COVEPlayer.prototype._onInitialPlay = function _onInitialPlay() {
+PBSPlayer.prototype._onInitialPlay = function _onInitialPlay() {
 
   // Unbind the initial play event immediately
   this.off('play', this._onInitialPlay);
@@ -101,7 +101,7 @@ COVEPlayer.prototype._onInitialPlay = function _onInitialPlay() {
  *
  * @private
  */
-COVEPlayer.prototype._recordFullDurationOfVideo = function _recordFullDurationOfVideo() {
+PBSPlayer.prototype._recordFullDurationOfVideo = function _recordFullDurationOfVideo() {
 
   // Start by resetting the internal tracking duration
   this._trackingFullVideoDuration = 0;
@@ -119,7 +119,7 @@ COVEPlayer.prototype._recordFullDurationOfVideo = function _recordFullDurationOf
  *
  * @private
  */
-COVEPlayer.prototype._handlePauseAtEndOfVideo = function _handlePauseAtEndOfVideo() {
+PBSPlayer.prototype._handlePauseAtEndOfVideo = function _handlePauseAtEndOfVideo() {
 
   // When a pause occurs, fire off a request for the current playback position.
   this.getPosition().then(function(position) {
@@ -139,13 +139,13 @@ COVEPlayer.prototype._handlePauseAtEndOfVideo = function _handlePauseAtEndOfVide
  *
  * @private
  */
-COVEPlayer.prototype._loadPlugins = function _loadPlugins() {
+PBSPlayer.prototype._loadPlugins = function _loadPlugins() {
 
   // Loop through each of the installed plugins and boot each one
   Object.keys(this._options.plugins).forEach(
     function (pluginName) {
 
-      // Run the plugin function for this COVEPlayer and boot the plugin
+      // Run the plugin function for this PBSPlayer and boot the plugin
       this.plugin(pluginName, this._options.plugins[pluginName], [this]);
     }.bind(this)
   );
@@ -153,19 +153,19 @@ COVEPlayer.prototype._loadPlugins = function _loadPlugins() {
 
 /**
  * Installs a plugin into the list of default plugins to load for future
- * instances of COVEPlayers
+ * instances of PBSPlayers
  *
  * @param {string} pluginName The name to load the plugin as. This is how the
  *                            plugin will be accessed
  * @param {function} plugin A function that returns the plugin. The function
- *                          will be called with the COVEPlayer instance as
+ *                          will be called with the PBSPlayer instance as
  *                          the argument
  */
-COVEPlayer.addPlugin = function addPlugin(pluginName, plugin) {
+PBSPlayer.addPlugin = function addPlugin(pluginName, plugin) {
   privateNS.defaults.plugins[pluginName] = plugin;
 };
 
 // By default install the Google Analytics plugin
-COVEPlayer.addPlugin('analytics', COVEGoogleAnalytics);
+PBSPlayer.addPlugin('analytics', COVEGoogleAnalytics);
 
-export default COVEPlayer;
+export default PBSPlayer;

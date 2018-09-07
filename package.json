@@ -1,8 +1,8 @@
 {
   "private": true,
-  "name": "cove-partner",
+  "name": "pbs-partner",
   "version": "1.0.0",
-  "description": "A library for interacting with an embedded COVE partner player",
+  "description": "A library for interacting with an embedded PBS partner player",
   "main": "src/index.js",
   "scripts": {
     "build": "./node_modules/.bin/webpack",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/twincitiespublictelevision/cove-partner"
+    "url": "git+https://github.com/twincitiespublictelevision/pbs-partner"
   },
   "author": "Twin Cities PBS",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/twincitiespublictelevision/cove-partner/issues"
+    "url": "https://github.com/twincitiespublictelevision/pbs-partner/issues"
   },
-  "homepage": "https://github.com/twincitiespublictelevision/cove-partner",
+  "homepage": "https://github.com/twincitiespublictelevision/pbs-partner",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

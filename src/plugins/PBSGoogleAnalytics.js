@@ -5,9 +5,9 @@ import extend from './../libs/extend';
  *
  * @constructor
  */
-var COVEGoogleAnalytics = function(COVEMediaEvents) {
+var PBSGoogleAnalytics = function(PBSMediaEvents) {
 
-  this._COVEMediaEvents = COVEMediaEvents;
+  this._PBSMediaEvents = PBSMediaEvents;
 
   // Set up default values for the internal state
   this._tracker = null;
@@ -16,10 +16,10 @@ var COVEGoogleAnalytics = function(COVEMediaEvents) {
     'MediaStop': []
   };
 
-  // Bind the events of the COVEMediaEvents so that they track to the defined
+  // Bind the events of the PBSMediaEvents so that they track to the defined
   // tracker
-  this._COVEMediaEvents.on('MediaStart', this._trackMediaStart.bind(this));
-  this._COVEMediaEvents.on('MediaStop', this._trackMediaStop.bind(this));
+  this._PBSMediaEvents.on('MediaStart', this._trackMediaStart.bind(this));
+  this._PBSMediaEvents.on('MediaStop', this._trackMediaStop.bind(this));
 };
 
 /**
@@ -30,7 +30,7 @@ var COVEGoogleAnalytics = function(COVEMediaEvents) {
  * @param {function} fn A function that supports the Google Analytics tracking
  *                      syntax
  */
-COVEGoogleAnalytics.prototype.setTrackingFunction = function setTrackingFunction(fn) {
+PBSGoogleAnalytics.prototype.setTrackingFunction = function setTrackingFunction(fn) {
   this._tracker = fn;
 };
 
@@ -45,7 +45,7 @@ COVEGoogleAnalytics.prototype.setTrackingFunction = function setTrackingFunction
  * @param {string} metric The name of the metric to track to
  * @private
  */
-COVEGoogleAnalytics.prototype._addTracking = function _addTracking(event, category, label, metric, actionOverride) {
+PBSGoogleAnalytics.prototype._addTracking = function _addTracking(event, category, label, metric, actionOverride) {
   this._trackingTargets[event].push({
     category: category,
     label: label,
@@ -63,7 +63,7 @@ COVEGoogleAnalytics.prototype._addTracking = function _addTracking(event, catego
  * @param {string} label The label that should be tracked with
  * @param {string} metric The name of the metric to track to
  */
-COVEGoogleAnalytics.prototype.addMediaStartTracking = function addMediaStartTracking(category, label, metric, actionOverride) {
+PBSGoogleAnalytics.prototype.addMediaStartTracking = function addMediaStartTracking(category, label, metric, actionOverride) {
   this._addTracking('MediaStart', category, label, metric, actionOverride);
 };
 
@@ -76,7 +76,7 @@ COVEGoogleAnalytics.prototype.addMediaStartTracking = function addMediaStartTrac
  * @param {string} label The label that should be tracked with
  * @param {string} metric The name of the metric to track to
  */
-COVEGoogleAnalytics.prototype.addMediaStopTracking = function addMediaStopTracking(category, label, metric, actionOverride) {
+PBSGoogleAnalytics.prototype.addMediaStopTracking = function addMediaStopTracking(category, label, metric, actionOverride) {
   this._addTracking('MediaStop', category, label, metric, actionOverride);
 };
 
@@ -90,7 +90,7 @@ COVEGoogleAnalytics.prototype.addMediaStopTracking = function addMediaStopTracki
  * @param {string} metric The name of the metric to track to
  * @param {object} [actionOverrides] Optionally specify custom start and stop tracking actions
  */
-COVEGoogleAnalytics.prototype.addMediaTracking = function addMediaStopTracking(category, label, metric, actionOverrides) {
+PBSGoogleAnalytics.prototype.addMediaTracking = function addMediaStopTracking(category, label, metric, actionOverrides) {
 
   // Loop through the Media
   this.addMediaStartTracking(category, label, metric, actionOverrides && actionOverrides.start || undefined);
@@ -104,7 +104,7 @@ COVEGoogleAnalytics.prototype.addMediaTracking = function addMediaStopTracking(c
  *
  * @private
  */
-COVEGoogleAnalytics.prototype._trackMediaStart = function startTracking() {
+PBSGoogleAnalytics.prototype._trackMediaStart = function startTracking() {
 
   // If a tracker has been defined then track to it
   if (this._tracker) {
@@ -137,7 +137,7 @@ COVEGoogleAnalytics.prototype._trackMediaStart = function startTracking() {
  * @param {object} event An object containing data sent with the event
  * @private
  */
-COVEGoogleAnalytics.prototype._trackMediaStop = function _trackMediaStop(event) {
+PBSGoogleAnalytics.prototype._trackMediaStop = function _trackMediaStop(event) {
 
   // Since this event is often called during a potentially troublesome time
   // (ie. unload of the page), attempt to use the beacon method if it is
@@ -175,4 +175,4 @@ COVEGoogleAnalytics.prototype._trackMediaStop = function _trackMediaStop(event) 
   }
 };
 
-export default COVEGoogleAnalytics;
+export default PBSGoogleAnalytics;

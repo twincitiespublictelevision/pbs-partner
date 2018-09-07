@@ -1,8 +1,8 @@
-# cove-partner
+# pbs-partner
 
 ### Example of using dist version
 ```javascript
-let player = new COVEPartner();
+let player = new PBSParner();
 player.setPlayer(document.getElementById('video-player'));
 
 player.analytics.setTrackingFunction(ga);

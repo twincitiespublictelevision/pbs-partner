@@ -1,4 +1,4 @@
-import COVEMessageAPI from './../src/COVEMessageAPI';
+import PBSMessageAPI from './../src/PBSMessageAPI';
 
 let origin = 'https://player.pbs.org';
 
@@ -62,7 +62,7 @@ describe('setPlayer', function() {
     player = mockPlayerFactory();
     env = mockWindowFactory();
     env.addEventListener = bindMock;
-    api = new COVEMessageAPI({env: env});
+    api = new PBSMessageAPI({env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -99,7 +99,7 @@ describe('setPlayer', function() {
 
   it('should listen for pagehide from the env on iPhone', function() {
     env.navigator.userAgent = 'iPhone';
-    api = new COVEMessageAPI({env: env});
+    api = new PBSMessageAPI({env: env});
     api.setPlayer(player);
 
     return expect(bindMock.mock.calls.map(c => [c[0]])).toEqual([['message'], ['pagehide']]);
@@ -107,7 +107,7 @@ describe('setPlayer', function() {
 
   it('should listen for pagehide from the env on iPad', function() {
     env.navigator.userAgent = 'iPad';
-    api = new COVEMessageAPI({env: env});
+    api = new PBSMessageAPI({env: env});
     api.setPlayer(player);
 
     return expect(bindMock.mock.calls.map(c => [c[0]])).toEqual([['message'], ['pagehide']]);
@@ -115,7 +115,7 @@ describe('setPlayer', function() {
 
   it('should listen for beforeunload from the env on non-iOS', function() {
     env.navigator.userAgent = '';
-    api = new COVEMessageAPI({env: env});
+    api = new PBSMessageAPI({env: env});
     api.setPlayer(player);
 
     return expect(bindMock.mock.calls.map(c => [c[0]])).toEqual([['message'], ['beforeunload']]);
@@ -150,7 +150,7 @@ describe('on', function() {
   beforeEach(function() {
     player = mockPlayerFactory();
     env = mockWindowFactory();
-    api = new COVEMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({player: player, env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -186,7 +186,7 @@ describe('off', function() {
   beforeEach(function() {
     player = mockPlayerFactory();
     env = mockWindowFactory();
-    api = new COVEMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({player: player, env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -279,7 +279,7 @@ describe('destroy', function() {
     player = mockPlayerFactory();
     env = mockWindowFactory();
     env.removeEventListener = removeMock;
-    api = new COVEMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({player: player, env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -305,7 +305,7 @@ describe('destroy', function() {
   });
 
   it('should stop listening for message events from the env', function() {
-    api = new COVEMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({player: player, env: env});
     api.destroy();
 
     return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'beforeunload']);
@@ -313,7 +313,7 @@ describe('destroy', function() {
 
   it('should stop listening for pagehide from the env on iPhone', function() {
     env.navigator.userAgent = 'iPhone';
-    api = new COVEMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({player: player, env: env});
     api.destroy();
 
     return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'pagehide']);
@@ -321,7 +321,7 @@ describe('destroy', function() {
 
   it('should stop listening for pagehide from the env on iPad', function() {
     env.navigator.userAgent = 'iPad';
-    api = new COVEMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({player: player, env: env});
     api.destroy();
 
     return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'pagehide']);
@@ -329,7 +329,7 @@ describe('destroy', function() {
 
   it('should stop listening for beforeunload from the env on non-iOS', function() {
     env.navigator.userAgent = '';
-    api = new COVEMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({player: player, env: env});
     api.destroy();
 
     return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'beforeunload']);
@@ -350,7 +350,7 @@ describe('fetch methods', function() {
     player = mockPlayerFactory();
     player.contentWindow.postMessage = messageMock;
     env = mockWindowFactory();
-    api = new COVEMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({player: player, env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -398,7 +398,7 @@ describe('control methods', function() {
     player = mockPlayerFactory();
     player.contentWindow.postMessage = messageMock;
     env = mockWindowFactory();
-    api = new COVEMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({player: player, env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -531,7 +531,7 @@ describe('utility', function() {
     player = mockPlayerFactory();
     player.contentWindow.postMessage = messageMock;
     env = mockWindowFactory();
-    api = new COVEMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({player: player, env: env});
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
