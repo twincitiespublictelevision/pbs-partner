@@ -4,16 +4,43 @@ export default function Resume(controls) {
   if (typeof get !== 'function' ||
       typeof set !== 'function' ||
       typeof del !== 'function') {
-    get = (id) => window.localStorage.getItem('resume')[id];
-    set = (id, val) => {
-      let data = window.localStorage.getItem('resume');
-      data[id] = val;
-      window.localStorage.setItem('resume', data);
+    get = (id) => {
+      try {
+        let data = window.localStorage.getItem('resume');
+
+        if (data) {
+          return JSON.parse(data)[id];
+        }
+      } catch (_) {}
+
+      return null;
     };
+
+    set = (id, val) => {
+      let data;
+
+      try {
+        data = JSON.parse(window.localStorage.getItem('resume'));
+      } catch (_) {}
+
+      if (!data) {
+        data = {};
+      }
+
+      data[id] = val;
+
+      window.localStorage.setItem('resume', JSON.stringify(data));
+    };
+
     del = (id) => {
-      let data = window.localStorage.getItem('resume');
-      delete data[id];
-      window.localStorage.setItem('resume', data);
+      try {
+        let data = JSON.parse(window.localStorage.getItem('resume'));
+
+        if (data) {
+          delete data[id];
+          window.localStorage.setItem('resume', data);
+        }
+      } catch (_) {}
     };
   }
 
@@ -44,5 +71,12 @@ export default function Resume(controls) {
         }
       }
     });
+    this._player.on('complete', () => {
+      let id = player.getVideoId();
+
+      if (id) {
+        del(id);
+      }
+    })
   };
 }
