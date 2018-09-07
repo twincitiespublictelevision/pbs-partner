@@ -1,7 +1,7 @@
 import PBSMessageAPI from './PBSMessageAPI';
 
 /**
- * Triggers media events based on the messages sent from a COVE Player
+ * Triggers media events based on the messages sent from a PBS Player
  *
  * @param {object} [options] Passes to PBSMessageAPI. See constructor.
  * @constructor
@@ -21,10 +21,10 @@ function PBSMediaEvents(options) {
   this._resetTracking();
 }
 
-// Extend from the COVEMessagingAPI prototype
+// Extend from the PBSMessagingAPI prototype
 PBSMediaEvents.prototype = Object.create(PBSMessageAPI.prototype);
 
-// Set the "constructor" property to refer to COVEPlayer
+// Set the "constructor" property to refer to PBSPlayer
 PBSMediaEvents.prototype.constructor = PBSMediaEvents;
 
 /**
@@ -161,7 +161,7 @@ PBSMediaEvents.prototype._pauseRecordingPlaybackData = function _pauseRecordingP
 /**
  * Gets the number of milliseconds that have passed since the last time
  * a duration check has run and adds it to the cumulative playback duration.
- * Fires a message to the COVE Message API to request the current playback
+ * Fires a message to the PBS Message API to request the current playback
  * position to determine the furthest point reached in the video
  *
  * @private

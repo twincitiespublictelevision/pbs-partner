@@ -71,7 +71,7 @@ const defaults = {
 };
 
 /**
- * A toolset for communicating with an embedded COVE Player. Handles the
+ * A toolset for communicating with an embedded PBS Player. Handles the
  * connection setup and the communication channel. Provides helper methods for
  * sending messages and retrieving information from the player.
  *
@@ -81,7 +81,7 @@ const defaults = {
  * @param {object} [options] An options object for configuration
  * @param {string|DOMElement} [options.player] The player instance to connect to
  * @param {string} [options.playerOrigin] The origin of the player. If this is
- *                                        not passed in then the COVE https
+ *                                        not passed in then the PBS https
  *                                        origin is used
  * @param {object} [options.env] An optional argument used to specify the env
  *                               to listen for postMessage events on. If
@@ -438,7 +438,7 @@ PBSMessageAPI.prototype._getMessageValue = function _getMessageValue(messageObj)
 };
 
 /**
- * Gets the value of the response sent by COVE to a request sent to the COVE
+ * Gets the value of the response sent by PBS to a request sent to the PBS
  * player API. If a default value is passed in then this will resolve to that
  * value in the case that a value can not be extract from the response. If
  * no default value is passed in then null will be the default value.

@@ -4,8 +4,8 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: __dirname,
-    filename: 'dist/covepartner.min.js',
-    library: 'COVEPartner',
+    filename: 'dist/pbspartner.min.js',
+    library: 'PBSPartner',
     libraryExport: 'default',
     libraryTarget: 'umd'
   },

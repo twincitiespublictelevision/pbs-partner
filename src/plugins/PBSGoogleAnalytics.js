@@ -99,7 +99,7 @@ PBSGoogleAnalytics.prototype.addMediaTracking = function addMediaStopTracking(ca
 
 
 /**
- * Bind the tracking events to the Messaging API so that messages from COVE
+ * Bind the tracking events to the Messaging API so that messages from PBS
  * trigger the appropriate tracking handlers
  *
  * @private

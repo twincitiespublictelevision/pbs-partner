@@ -1,5 +1,5 @@
 import PBSMediaEvents from './PBSMediaEvents';
-import COVEGoogleAnalytics from './plugins/COVEGoogleAnalytics';
+import PBSGoogleAnalytics from './plugins/PBSGoogleAnalytics';
 
 import extend from './libs/extend';
 
@@ -11,7 +11,7 @@ const privateNS = {
 };
 
 /**
- * An interface for binding to and interacting with an embedded COVE player
+ * An interface for binding to and interacting with an embedded PBS player
  *
  * @param {object} [options] Passes to PBSMediaEvents. See constructor.
  * @constructor
@@ -30,7 +30,7 @@ function PBSPlayer(options) {
   this._options = extend({}, privateNS.defaults, (this._options || {}));
 }
 
-// Extend from the COVEMessagingAPI prototype
+// Extend from the PBSMessagingAPI prototype
 PBSPlayer.prototype = Object.create(PBSMediaEvents.prototype);
 
 // Set the "constructor" property to refer to PBSPlayer
@@ -166,6 +166,6 @@ PBSPlayer.addPlugin = function addPlugin(pluginName, plugin) {
 };
 
 // By default install the Google Analytics plugin
-PBSPlayer.addPlugin('analytics', COVEGoogleAnalytics);
+PBSPlayer.addPlugin('analytics', PBSGoogleAnalytics);
 
 export default PBSPlayer;
