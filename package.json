@@ -20,9 +20,9 @@
   },
   "homepage": "https://github.com/twincitiespublictelevision/pbs-partner",
   "devDependencies": {
-    "babel-core": "^6.26.3",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
     "babel-loader": "^7.1.5",
-    "babel-preset-env": "^1.6.0",
     "documentation": "^5.5.0",
     "jest": "^21.2.1",
     "webpack": "^3.12.0"
