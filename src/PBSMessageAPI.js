@@ -50,7 +50,8 @@ const defaults = {
     'video::finished': 'complete',
     'video::seeking': 'seek',
     'ad::started': 'adPlay',
-    'ad::complete': 'adComplete'
+    'ad::complete': 'adComplete',
+    'getPosition': 'position'
   },
 
   // Define a whitelist of supported events
@@ -66,6 +67,7 @@ const defaults = {
     'adPlay',
     'adComplete',
     'error',
+    'position',
     'message' // Message is a generic event that triggers on every message
   ]
 };
@@ -222,13 +224,21 @@ PBSMessageAPI.prototype._validateEvent = function _validateEvent(event) {
  */
 PBSMessageAPI.prototype._triggerEvent = function _triggerEvent(eventData) {
 
-  // If this is an event that is mapped, trigger it
-  if (typeof this._options.playerEvents[eventData] !== 'undefined' ||
-      this._options.allowedEvents.indexOf(eventData) !== -1) {
+  let pEv = Object.keys(this._options.playerEvents).filter(ev => eventData.indexOf(ev) !== -1);
 
-    this.trigger(
-      this._options.playerEvents[eventData] || eventData
-    );
+  // If this is an event that is mapped, trigger it
+  if (pEv.length > 0 || this._options.allowedEvents.indexOf(eventData) !== -1) {
+
+    let ev = eventData;
+    let value = null;
+
+    if (pEv.length > 0) {
+      let parts = eventData.split('::');
+      ev = this._options.playerEvents[pEv[0]];
+      value = parts.length === 2 ? parts[1] : undefined;
+    }
+
+    this.trigger(ev, value);
   }
 };
 
