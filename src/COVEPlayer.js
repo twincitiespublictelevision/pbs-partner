@@ -1,11 +1,10 @@
-// var COVEMediaEvents = require('./COVEMediaEvents');
 import COVEMediaEvents from './COVEMediaEvents';
 import COVEGoogleAnalytics from './plugins/COVEGoogleAnalytics';
 
 import extend from './libs/extend';
 
 // Namespace for private variables and functions
-var privateNS = {
+const privateNS = {
   defaults: { // Namespace for default options
     plugins: {}
   }
@@ -62,8 +61,6 @@ COVEPlayer.prototype.setPlayer = function setPlayer(playerFrame) {
 
 /**
  * Resets and removes playback tracking and events. Calls parent method.
- *
- * @param playerFrame
  */
 COVEPlayer.prototype.destroy = function destroy() {
   COVEMediaEvents.prototype.destroy.call(this);
@@ -105,6 +102,9 @@ COVEPlayer.prototype._onInitialPlay = function _onInitialPlay() {
  * @private
  */
 COVEPlayer.prototype._recordFullDurationOfVideo = function _recordFullDurationOfVideo() {
+
+  // Start by resetting the internal tracking duration
+  this._trackingFullVideoDuration = 0;
 
   // Request and store the full video duration
   this.getDuration().then(function(duration) {

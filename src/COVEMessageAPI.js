@@ -1,8 +1,7 @@
-let MicroEvent = require('./libs/MicroEvent.js');
-
 import Promise from 'native-promise-only';
 import extend from './libs/extend';
 import Plugin from './libs/plugin';
+import MicroEvent from './libs/MicroEvent';
 
 // Create a shorthand accessor for the query selector
 var q = document.querySelector;
@@ -39,7 +38,7 @@ const defaults = {
   ],
 
   // The player origin can not be safely be determined programatically. It
-  // is hard set here so communicate only happens with the PBS player
+  // is hard set here so communication only happens with the PBS player
   playerOrigin: 'https://player.pbs.org',
 
   // Define a map of the PBS event namespace to the TPT event namespace
@@ -86,7 +85,7 @@ const defaults = {
  *                                        origin is used
  * @param {object} [options.env] An optional argument used to specify the env
  *                               to listen for postMessage events on. If
- *                               ommited then a global window object will be
+ *                               omitted then a global window object will be
  *                               looked for
  * @constructor
  */

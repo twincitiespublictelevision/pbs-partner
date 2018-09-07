@@ -54,9 +54,10 @@ MicroEvent.prototype	= {
 	}
 };
 
-module.exports = {
-  mixin: mixin(
-    ['bind', 'unbind', 'trigger'],
-    MicroEvent
-  )
-};
+
+export default {
+	mixin: mixin(
+		['bind', 'unbind', 'trigger'],
+		MicroEvent
+	)
+}

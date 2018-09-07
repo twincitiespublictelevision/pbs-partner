@@ -102,10 +102,9 @@ COVEGoogleAnalytics.prototype.addMediaTracking = function addMediaStopTracking(c
  * Bind the tracking events to the Messaging API so that messages from COVE
  * trigger the appropriate tracking handlers
  *
- * @param {object} event An object containing data sent with the event
  * @private
  */
-COVEGoogleAnalytics.prototype._trackMediaStart = function startTracking(event) {
+COVEGoogleAnalytics.prototype._trackMediaStart = function startTracking() {
 
   // If a tracker has been defined then track to it
   if (this._tracker) {

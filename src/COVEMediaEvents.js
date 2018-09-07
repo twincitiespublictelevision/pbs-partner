@@ -1,12 +1,4 @@
-// var COVEMessageAPI = require('./COVEMessageAPI.js');
 import COVEMessageAPI from './COVEMessageAPI';
-
-// Namespace for private variables and functions
-var privateNS = {
-  defaults: { // Namespace for default options
-    plugins: {}
-  }
-};
 
 /**
  * Triggers media events based on the messages sent from a COVE Player
@@ -27,7 +19,7 @@ function COVEMediaEvents(options) {
 
   // Do the initial reset and startup the tracking pieces
   this._resetTracking();
-};
+}
 
 // Extend from the COVEMessagingAPI prototype
 COVEMediaEvents.prototype = Object.create(COVEMessageAPI.prototype);
@@ -47,8 +39,6 @@ COVEMediaEvents.prototype.setPlayer = function setPlayer(playerFrame) {
 
 /**
  * Resets the media event tracking. Calls parent method.
- *
- * @param playerFrame
  */
 COVEMediaEvents.prototype.destroy = function destroy() {
   COVEMessageAPI.prototype.destroy.call(this);
@@ -72,9 +62,6 @@ COVEMediaEvents.prototype._resetTracking = function _resetTracking() {
 
   // Reset the tracker for the playback duration interval
   this._lastRun = 0;
-
-  // Reset the recorded full duration
-  this._trackingFullVideoDuration = 0;
 
   // Reset the furthest reached playback location
   this._furthestReach = 0;
