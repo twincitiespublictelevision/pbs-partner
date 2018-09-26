@@ -1,51 +1,5 @@
 import PBSMessageAPI from './../src/PBSMessageAPI';
-
-let origin = 'https://player.pbs.org';
-
-function mockMessagePort() {
-  return {
-    postMessage: function() {}
-  }
-}
-
-function mockMessageChannel() {
-  return {
-    port1: mockMessagePort(),
-    port2: mockMessagePort()
-  }
-}
-
-function mockMessageEventFactoryFactory(source) {
-  return function(eventData) {
-    return new MessageEvent(
-      'message',
-      {
-        data: eventData,
-        origin: origin,
-        source: source
-      }
-    );
-  };
-};
-
-function mockPlayerFactory(state) {
-  let _state = state || {},
-      channel = mockMessageChannel();
-
-  return {
-    contentWindow: channel.port1
-  };
-};
-
-function mockWindowFactory() {
-  let x = document.createElement(null);
-
-  x.navigator = {
-    userAgent: ''
-  };
-
-  return x;
-};
+import { origin, mockPlayerFactory, mockWindowFactory, mockMessageEventFactoryFactory } from "./setup";
 
 describe('setPlayer', function() {
 
@@ -150,7 +104,8 @@ describe('on', function() {
   beforeEach(function() {
     player = mockPlayerFactory();
     env = mockWindowFactory();
-    api = new PBSMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({env: env});
+    api.setPlayer(player);
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -186,7 +141,8 @@ describe('off', function() {
   beforeEach(function() {
     player = mockPlayerFactory();
     env = mockWindowFactory();
-    api = new PBSMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({env: env});
+    api.setPlayer(player);
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -279,7 +235,8 @@ describe('destroy', function() {
     player = mockPlayerFactory();
     env = mockWindowFactory();
     env.removeEventListener = removeMock;
-    api = new PBSMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({env: env});
+    api.setPlayer(player);
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -305,7 +262,8 @@ describe('destroy', function() {
   });
 
   it('should stop listening for message events from the env', function() {
-    api = new PBSMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({env: env});
+    api.setPlayer(player);
     api.destroy();
 
     return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'beforeunload']);
@@ -313,7 +271,8 @@ describe('destroy', function() {
 
   it('should stop listening for pagehide from the env on iPhone', function() {
     env.navigator.userAgent = 'iPhone';
-    api = new PBSMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({env: env});
+    api.setPlayer(player);
     api.destroy();
 
     return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'pagehide']);
@@ -321,7 +280,8 @@ describe('destroy', function() {
 
   it('should stop listening for pagehide from the env on iPad', function() {
     env.navigator.userAgent = 'iPad';
-    api = new PBSMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({env: env});
+    api.setPlayer(player);
     api.destroy();
 
     return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'pagehide']);
@@ -329,7 +289,8 @@ describe('destroy', function() {
 
   it('should stop listening for beforeunload from the env on non-iOS', function() {
     env.navigator.userAgent = '';
-    api = new PBSMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({env: env});
+    api.setPlayer(player);
     api.destroy();
 
     return expect(removeMock.mock.calls.map(c => c[0])).toEqual(['message', 'beforeunload']);
@@ -350,7 +311,8 @@ describe('fetch methods', function() {
     player = mockPlayerFactory();
     player.contentWindow.postMessage = messageMock;
     env = mockWindowFactory();
-    api = new PBSMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({env: env});
+    api.setPlayer(player);
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -398,7 +360,8 @@ describe('control methods', function() {
     player = mockPlayerFactory();
     player.contentWindow.postMessage = messageMock;
     env = mockWindowFactory();
-    api = new PBSMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({env: env});
+    api.setPlayer(player);
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
@@ -531,7 +494,8 @@ describe('utility', function() {
     player = mockPlayerFactory();
     player.contentWindow.postMessage = messageMock;
     env = mockWindowFactory();
-    api = new PBSMessageAPI({player: player, env: env});
+    api = new PBSMessageAPI({env: env});
+    api.setPlayer(player);
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 

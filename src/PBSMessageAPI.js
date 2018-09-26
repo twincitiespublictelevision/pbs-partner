@@ -99,16 +99,6 @@ function PBSMessageAPI(options) {
 
   // Set the environment of the player
   this._env = this._options.env || window;
-
-  // Set the internal video id if it is provided
-  if (this._options.id) {
-    this.setVideoId(this._options.id);
-  }
-
-  // Create a reference to the UI container if it is available
-  if (this._options.player) {
-    this.setPlayer(this._options.player);
-  }
 }
 
 PBSMessageAPI.prototype.setVideoId = function setVideoId(id) {

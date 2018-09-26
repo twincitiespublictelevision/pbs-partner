@@ -53,13 +53,6 @@ export default function Resume(controls) {
         set(id, Math.floor(val));
       }
     });
-    this._player.on('MediaStop', val => {
-      let id = player.getVideoId();
-
-      if (id) {
-        set(id, Math.floor(val.secondsReached));
-      }
-    });
     this._player.on('play', () => {
       let id = player.getVideoId();
 

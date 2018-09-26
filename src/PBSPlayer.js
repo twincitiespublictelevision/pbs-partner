@@ -1,8 +1,6 @@
 import PBSMediaEvents from './PBSMediaEvents';
 import GoogleAnalytics from './plugins/GoogleAnalytics';
 
-import extend from './libs/extend';
-
 // Namespace for private variables and functions
 const privateNS = {
   defaults: { // Namespace for default options
@@ -19,15 +17,12 @@ const privateNS = {
 function PBSPlayer(options) {
 
   // Call the parent constructor
-  PBSMediaEvents.call(this, this.options);
+  PBSMediaEvents.call(this, options);
 
   // Add connected as an allowed event for the MessageAPI
   this._options.allowedEvents = this._options.allowedEvents.concat([
     'connected'
   ]);
-
-  // Extend the options with any existing options
-  this._options = extend({}, privateNS.defaults, (this._options || {}));
 }
 
 // Extend from the PBSMessagingAPI prototype
@@ -142,11 +137,11 @@ PBSPlayer.prototype._handlePauseAtEndOfVideo = function _handlePauseAtEndOfVideo
 PBSPlayer.prototype._loadPlugins = function _loadPlugins() {
 
   // Loop through each of the installed plugins and boot each one
-  Object.keys(this._options.plugins).forEach(
+  Object.keys(privateNS.defaults.plugins).forEach(
     function (pluginName) {
 
       // Run the plugin function for this PBSPlayer and boot the plugin
-      this.plugin(pluginName, this._options.plugins[pluginName], [this]);
+      this.plugin(pluginName, privateNS.defaults.plugins[pluginName], [this]);
     }.bind(this)
   );
 };
