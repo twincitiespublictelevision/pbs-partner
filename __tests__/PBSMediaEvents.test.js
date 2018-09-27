@@ -22,15 +22,35 @@ describe('MediaStart', function() {
   });
 
   it('should send MediaStart exactly once', function() {
-    return expect(true).toEqual(true);
+    let handlerMock = jest.fn();
+    api.on('MediaStart', handlerMock);
+
+    api.trigger('play');
+    api.trigger('play');
+
+    return expect(handlerMock.mock.calls.length).toBe(1);
   });
 
   it('should send MediaStart again after complete', function() {
-    return expect(true).toEqual(true);
+    let handlerMock = jest.fn();
+    api.on('MediaStart', handlerMock);
+
+    api.trigger('play');
+    api.trigger('complete');
+    api.trigger('play');
+
+    return expect(handlerMock.mock.calls.length).toBe(2);
   });
 
   it('should send MediaStart again after destroy', function() {
-    return expect(true).toEqual(true);
+    let handlerMock = jest.fn();
+    api.on('MediaStart', handlerMock);
+
+    api.trigger('play');
+    api.trigger('destroy');
+    api.trigger('play');
+
+    return expect(handlerMock.mock.calls.length).toBe(2);
   });
 });
 
@@ -55,20 +75,58 @@ describe('MediaStop', function() {
   });
 
   it('should send not send MediaStop before MediaStart', function() {
-    return expect(true).toEqual(true);
+    let handlerMock = jest.fn();
+    api.on('MediaStop', handlerMock);
+
+    api.trigger('complete');
+
+    return expect(handlerMock.mock.calls.length).toBe(0);
   });
 
   it('should send MediaStop on complete', function() {
-    return expect(true).toEqual(true);
+    let handlerMock = jest.fn();
+    api.on('MediaStop', handlerMock);
+
+    api.trigger('play');
+    api.trigger('complete');
+
+    return expect(handlerMock.mock.calls.length).toBe(1);
   });
 
   it('should send MediaStop on destroy', function() {
-    return expect(true).toEqual(true);
+    let handlerMock = jest.fn();
+    api.on('MediaStop', handlerMock);
+
+    api.trigger('play');
+    api.trigger('destroy');
+
+    return expect(handlerMock.mock.calls.length).toBe(1);
   });
 
   it('should include duration and reach', function() {
-    return expect(true).toEqual(true);
+    let handlerMock = jest.fn();
+    let time = 0;
 
+    player.contentWindow.postMessage = function() {
+      time++;
+      env.dispatchEvent(makeEvent(`getPosition::${time}`));
+    };
+
+    api.on('MediaStop', handlerMock);
+
+    let result = new Promise((res) => {
+      setTimeout(() => {
+        api.trigger('complete');
+
+        res();
+      }, 2000);
+    });
+
+    api.trigger('play');
+
+    return result.then(() => {
+      return expect(handlerMock.mock.calls[0][0]).toEqual({secondsPlayed: 1, secondsReached: 2});
+    });
   });
 });
 
@@ -92,11 +150,30 @@ describe('Progress tracking', function() {
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
-  it('should include duration and reach on MediaStop', function() {
-    return expect(true).toEqual(true);
-  });
-
   it('should reset duration and reach on MediaStop', function() {
-    return expect(true).toEqual(true);
+    let handlerMock = jest.fn();
+    let time = 0;
+
+    player.contentWindow.postMessage = function() {
+      time++;
+      env.dispatchEvent(makeEvent(`getPosition::${time}`));
+    };
+
+    api.on('MediaStop', handlerMock);
+
+    let result = new Promise((res) => {
+      setTimeout(() => {
+        api.trigger('complete');
+        api.trigger('play');
+        api.trigger('complete');
+        res();
+      }, 2000);
+    });
+
+    api.trigger('play');
+
+    return result.then(() => {
+      return expect(handlerMock.mock.calls[1][0]).toEqual({secondsPlayed: 0, secondsReached: 0});
+    });
   });
 });
