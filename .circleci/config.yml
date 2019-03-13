@@ -5,11 +5,11 @@ jobs:
       - image: circleci/node:6.10
     steps:
       - restore_cache:
-          key: repo-{{ .Branch }}
+          key: repo-v2-{{ .Branch }}
       - checkout
       - run: echo $CIRCLE_SHA1 > .circle-sha
       - save_cache:
-          key: repo-{{ .Branch }}-{{ checksum ".circle-sha" }}
+          key: repo-v2-{{ .Branch }}-{{ checksum ".circle-sha" }}
           paths:
             - ~/project
 
@@ -19,7 +19,7 @@ jobs:
     steps:
       - run: echo $CIRCLE_SHA1 > .circle-sha
       - restore_cache:
-          key: repo-{{ .Branch }}-{{ checksum ".circle-sha" }}
+          key: repo-v2-{{ .Branch }}-{{ checksum ".circle-sha" }}
       - restore_cache:
           key: node_modules-{{ checksum "package.json" }}
       - run: npm install
@@ -37,7 +37,7 @@ jobs:
     steps:
       - run: echo $CIRCLE_SHA1 > .circle-sha
       - restore_cache:
-          key: repo-{{ .Branch }}-{{ checksum ".circle-sha" }}
+          key: repo-v2-{{ .Branch }}-{{ checksum ".circle-sha" }}
       - restore_cache:
           key: node_modules-{{ checksum "package.json" }}
       - run: npm install
@@ -59,7 +59,7 @@ jobs:
     steps:
       - run: echo $CIRCLE_SHA1 > .circle-sha
       - restore_cache:
-          key: repo-{{ .Branch }}-{{ checksum ".circle-sha" }}
+          key: repo-v2-{{ .Branch }}-{{ checksum ".circle-sha" }}
       - restore_cache:
           key: dist-{{ checksum ".circle-sha" }}
       - add-ssh-keys:
@@ -88,10 +88,9 @@ workflows:
             - checkout
       - node_build:
           requires:
-            - checkout
+            - node_test
       - deploy_to_github:
           requires:
-            - node_test
             - node_build
           filters:
             branches:
