@@ -156,7 +156,7 @@ GoogleAnalytics.prototype._trackMediaStop = function _trackMediaStop(event) {
 
         // Generate a custom metric out of the furthest reach data
         var gaOptionsWithMetric = extend({}, options);
-        gaOptionsWithMetric[trackingConfig.metric] = event.secondsReached;
+        gaOptionsWithMetric[trackingConfig.metric] = event && event.secondsReached || 0;
 
         // Along with the event send the cumulative number of playback seconds that
         // were recorded as the event value as well as the custom reach metric
@@ -166,7 +166,7 @@ GoogleAnalytics.prototype._trackMediaStop = function _trackMediaStop(event) {
           trackingConfig.category,
           trackingConfig.action || 'MediaStop',
           trackingConfig.label,
-          event.secondsPlayed,
+          event && event.secondsPlayed || 0,
           gaOptionsWithMetric
         );
       },
