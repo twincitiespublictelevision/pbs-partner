@@ -28,7 +28,19 @@ describe('GoogleAnalytics', function() {
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
-  it('should work', function() {
-    return expect(true).toEqual(true);
+  it('should call tracking function', function() {
+    return expect(true).toEqual(false);
+  });
+
+  it('should track MediaStart', function() {
+    return expect(true).toEqual(false);
+  });
+
+  it('should track MediaStop', function() {
+    return expect(true).toEqual(false);
+  });
+
+  it('should track both MediaStart and MediaStop', function() {
+    return expect(true).toEqual(false);
   });
 });
