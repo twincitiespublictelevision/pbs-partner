@@ -1,14 +1,14 @@
 {
-  "private": true,
-  "name": "pbs-partner",
+  "name": "@twincitiespublictelevision/pbs-partner",
   "version": "1.0.0",
   "description": "A library for interacting with an embedded PBS partner player",
-  "main": "src/index.js",
+  "main": "dist/pbspartner.min.js",
   "scripts": {
     "build": "./node_modules/.bin/webpack",
     "docs": "./node_modules/.bin/documentation build -o docs -f html --shallow --sort-order alpha src",
     "test": "NODE_ENV=test jest test.js"
   },
+  "files": [],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/twincitiespublictelevision/pbs-partner"
