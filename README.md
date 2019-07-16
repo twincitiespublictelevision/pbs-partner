@@ -1,5 +1,5 @@
 # pbs-partner
-[![CircleCI](https://circleci.com/gh/twincitiespublictelevision/pbs-partner/tree/master.svg?style=svg)](https://circleci.com/gh/twincitiespublictelevision/pbs-partner/tree/master) [docs](Documentation)
+[![CircleCI](https://circleci.com/gh/twincitiespublictelevision/pbs-partner/tree/master.svg?style=svg)](https://circleci.com/gh/twincitiespublictelevision/pbs-partner/tree/master) [Documentation](docs)
 
 `pbs-partner` is a library for connecting to a PBS Partner Player instance, sending commands, and listening for events.
 
@@ -10,7 +10,7 @@
 `pbs-partner` exposes a single main function PBSPartner that can be instantiated and connected to a PBS Partner Player iframe. A
 single instance maps to a single player.
 
-Communication with the iframe occurs over via the [https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage](postMessage API).
+Communication with the iframe occurs over via the [postMessage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage).
 Note that listening for messages is shared and the library attempts to match up events to the iframe instance that spawned the message. If
 the src of the iframe changes, it is recommended to close the old object and instantiate a new one. Currently, binding a single iframe
 to multiple PBSPartner instances is not supported.
