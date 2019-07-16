@@ -1,5 +1,5 @@
 # pbs-partner
-[![CircleCI](https://circleci.com/gh/twincitiespublictelevision/pbs-partner/tree/master.svg?style=svg)](https://circleci.com/gh/twincitiespublictelevision/pbs-partner/tree/master) [Documentation](docs)
+[![CircleCI](https://circleci.com/gh/twincitiespublictelevision/pbs-partner/tree/master.svg?style=svg)](https://circleci.com/gh/twincitiespublictelevision/pbs-partner/tree/master) [Documentation](https://twincitiespublictelevision.github.io/pbs-partner/)
 
 `pbs-partner` is a library for connecting to a PBS Partner Player instance, sending commands, and listening for events.
 
