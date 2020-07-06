@@ -3,7 +3,7 @@ import GoogleAnalytics from "../../src/plugins/GoogleAnalytics";
 
 import { origin, mockPlayerFactory, mockWindowFactory, mockMessageEventFactoryFactory } from "../setup";
 
-xdescribe('GoogleAnalytics', function() {
+describe('GoogleAnalytics', function() {
   let env,
     player,
     api,

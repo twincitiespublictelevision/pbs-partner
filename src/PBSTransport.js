@@ -40,6 +40,7 @@ const playerEvents = {
   // 'ended': 'stop',
   // 'loadeddata': 'initialize',
   // 'seeking': 'seek',
+  'currentTime': 'position'
 };
 
 // The player origin can not be safely be determined programatically. It

@@ -7,7 +7,7 @@ const get = (id) => storage[id];
 const set = (id, val) => storage[id] = val;
 const del = (id) => delete storage[id];
 
-xdescribe('Resume', function() {
+describe('Resume', function() {
   let env,
     player,
     api,
@@ -34,13 +34,13 @@ xdescribe('Resume', function() {
   });
 
   it('should record progress on position events', function() {
-    env.dispatchEvent(makeEvent('getPosition::1234'));
+    env.dispatchEvent(makeEvent('currentTime::1234'));
 
     return expect(get(videoId)).toEqual(1234);
   });
 
   it('should only record integers', function() {
-    env.dispatchEvent(makeEvent('getPosition::1234.5678'));
+    env.dispatchEvent(makeEvent('currentTime::1234.5678'));
 
     return expect(get(videoId)).toEqual(1234);
   });
@@ -48,18 +48,18 @@ xdescribe('Resume', function() {
   it('should not call seek on play if progress time does not exist', function() {
     api.trigger('play');
 
-    return expect(messageMock.mock.calls).not.toEqual(expect.arrayContaining([['seek::1234', 'https://player.pbs.org']]));
+    return expect(messageMock.mock.calls).not.toEqual(expect.arrayContaining([['setCurrentTime::1234', 'https://player.pbs.org']]));
   });
 
   it('should call seek on play if progress time exists', function() {
     set(videoId, 1234);
     api.trigger('play');
 
-    return expect(messageMock.mock.calls).toEqual(expect.arrayContaining([['seek::1234', 'https://player.pbs.org']]));
+    return expect(messageMock.mock.calls).toEqual(expect.arrayContaining([['setCurrentTime::1234', 'https://player.pbs.org']]));
   });
 
   it('should clear progress on complete', function() {
-    env.dispatchEvent(makeEvent('getPosition::1234'));
+    env.dispatchEvent(makeEvent('currentTime::1234'));
 
     expect(get(videoId)).toEqual(1234);
 
