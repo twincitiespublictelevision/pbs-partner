@@ -1,4 +1,4 @@
-import PBSMessageAPI from './PBSMessageAPI';
+import PBSMessageAPI from './PBSMessageLegacyAPI';
 
 /**
  * Triggers media events based on the messages sent from a PBS Player

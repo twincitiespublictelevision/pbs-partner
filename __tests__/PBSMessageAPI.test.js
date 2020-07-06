@@ -317,13 +317,10 @@ describe('fetch methods', function() {
   });
 
   var methodTests = [
-    {method: 'getState', message: 'getState', defaultValue: 0, returnValue: 23},
-    {method: 'getPosition', message: 'getPosition', defaultValue: 0, returnValue: 23},
-    {method: 'getDuration', message: 'getDuration', defaultValue: 0, returnValue: 23},
-    {method: 'getMute', message: 'getMute', defaultValue: false, returnValue: true},
-    {method: 'getVolume', message: 'getVolume', defaultValue: 0, returnValue: 23},
-    {method: 'getCurrentCaptions', message: 'getCurrentCaptions', defaultValue: 0, returnValue: 23},
-    {method: 'getCurrentQuality', message: 'getCurrentQuality', defaultValue: 0, returnValue: 23}
+    {method: 'getPosition', message: 'currentTime', defaultValue: 0, serverValue: 23, clientValue: 23},
+    {method: 'getDuration', message: 'duration', defaultValue: 0, serverValue: 23, clientValue: 23},
+    {method: 'getMute', message: 'muted', defaultValue: false, serverValue: true, clientValue: true},
+    {method: 'getVolume', message: 'volume', defaultValue: 0, serverValue: 0.23, clientValue: 23},
   ];
 
   methodTests.forEach(function(test) {
@@ -334,12 +331,12 @@ describe('fetch methods', function() {
         return expect(messageMock.mock.calls).toEqual([[test.message, origin]]);
       });
 
-      it('should resolve to ' + test.returnValue + ' when player succeeds', function() {
+      it('should resolve to ' + test.clientValue + ' when player succeeds', function() {
         let result = api[test.method]();
-        env.dispatchEvent(makeEvent(test.message + '::' + test.returnValue));
+        env.dispatchEvent(makeEvent(test.message + '::' + test.serverValue));
 
         return result.then(function(response) {
-          return expect(response).toEqual(test.returnValue);
+          return expect(response).toEqual(test.clientValue);
         });
       });
     });
@@ -384,31 +381,30 @@ describe('control methods', function() {
 
   describe('play', function() {
     it('should send a play message to the player if the player is not playing', function() {
+      env.dispatchEvent(makeEvent('video::paused'));
       var result = api.play();
-      env.dispatchEvent(makeEvent('getState::paused'));
 
       return result
         .then(function(response) {
-          expect(messageMock.mock.calls.length).toBe(2);
+          expect(messageMock.mock.calls.length).toBe(1);
           expect(messageMock.mock.calls).toEqual(expect.arrayContaining([['play', origin]]));
           return expect(response).toBeNull();
         });
     });
 
     it('should not send a play message to the player if the player is playing', function() {
+      env.dispatchEvent(makeEvent('video::playing'));
       var result = api.play();
-      env.dispatchEvent(makeEvent('getState::playing'));
 
       return result.then(function(response) {
-        expect(messageMock.mock.calls.length).toBe(1);
-        expect(messageMock.mock.calls).not.toEqual(expect.arrayContaining([['play', origin]]));
+        expect(messageMock.mock.calls.length).toBe(0);
         return expect(response).toBeNull();
       });
     });
 
     it('should resolve to null', function() {
       var result = api.play();
-      env.dispatchEvent(makeEvent('getState::playing'));
+      env.dispatchEvent(makeEvent('video::playing'));
 
       return result.then(function(response) { return expect(response).toBeNull(); });
     });
@@ -416,66 +412,67 @@ describe('control methods', function() {
 
   describe('pause', function() {
     it('should send a pause message to the player if the player is playing', function() {
+      env.dispatchEvent(makeEvent('video::playing'));
       var result = api.pause();
-      env.dispatchEvent(makeEvent('getState::playing'));
 
       return result.then(function(response) {
-        expect(messageMock.mock.calls.length).toBe(2);
+        expect(messageMock.mock.calls.length).toBe(1);
         expect(messageMock.mock.calls).toEqual(expect.arrayContaining([['pause', origin]]));
         return expect(response).toBeNull();
       });
     });
 
     it('should not send a pause message to the player if the player is not playing', function() {
+      env.dispatchEvent(makeEvent('video::paused'));
       var result = api.pause();
-      env.dispatchEvent(makeEvent('getState::paused'));
 
       return result.then(function(response) {
-        expect(messageMock.mock.calls.length).toBe(1);
-        expect(messageMock.mock.calls).not.toEqual(expect.arrayContaining([['pause', origin]]));
+        expect(messageMock.mock.calls.length).toBe(0);
         return expect(response).toBeNull();
       });
     });
 
     it('should resolve to null', function() {
       var result = api.pause();
-      env.dispatchEvent(makeEvent('getState::paused'));
+      env.dispatchEvent(makeEvent('video::paused'));
 
       return result.then(function(response) { return expect(response).toBeNull(); });
     });
   });
 
   var methodTests = [
-    {method: 'seek', message: 'seek', arg: 3},
-    {method: 'stop', message: 'stop'},
-    {method: 'setCurrentCaptions', message: 'setCurrentCaptions', arg: 3},
-    {method: 'setMute', message: 'setMute'},
-    {method: 'setVolume', message: 'setVolume', arg: 3},
-    {method: 'setCurrentCaptions', message: 'setCurrentCaptions', arg: 3},
-    {method: 'setCurrentQuality', message: 'setCurrentQuality', arg: 3}
+    {method: 'seek', message: 'setCurrentTime', clientArg: 3, serverArgument: 3},
+    {method: 'setMute', message: 'setMuted', clientArg: true, serverArgument: true},
+    {method: 'setVolume', message: 'setVolume', clientArg: 3, serverArgument: 0.03}
   ];
 
   methodTests.forEach(function(test) {
     describe(test.method, function() {
-      if (typeof test.arg !== 'undefined') {
-        it('should send a ' + test.message + ' message to the player with argument ' + test.arg, function() {
-          api[test.method](test.arg);
+      it('should send a ' + test.message + ' message to the player with argument ' + test.clientArg, function() {
+        api[test.method](test.clientArg);
 
-          return expect(messageMock.mock.calls).toEqual([[test.message + '::' + test.arg, origin]]);
-        });
-      } else {
-        it('should send a ' + test.message + ' message to the player', function() {
-          api[test.method]();
-
-          return expect(messageMock.mock.calls).toEqual([[test.message, origin]]);
-        });
-      }
+        return expect(messageMock.mock.calls).toEqual([[test.message + '::' + test.serverArgument, origin]]);
+      });
 
       it('should resolve to null', function() {
         var result = api[test.method]();
 
         return result.then(function(response) { return expect(response).toBeNull(); });
       });
+    });
+  });
+
+  describe('stop', function() {
+    it('should send a pause and load message to the player', function() {
+      return api['stop']().then(() => {
+        return expect(messageMock.mock.calls).toEqual([['pause', origin], ['load', origin]]);
+      });
+    });
+
+    it('should resolve to null', function() {
+      var result = api['stop']();
+
+      return result.then(function(response) { return expect(response).toBeNull(); });
     });
   });
 });
@@ -501,8 +498,8 @@ describe('utility', function() {
 
   describe('isPlaying', function() {
     it('should resolve to false when state is not playing', function() {
+      env.dispatchEvent(makeEvent('video::paused'));
       var result = api.isPlaying();
-      env.dispatchEvent(makeEvent('getState::paused'));
 
       return result.then(function(response) {
         return expect(response).toBe(false);
@@ -510,9 +507,9 @@ describe('utility', function() {
     });
 
     it('should resolve to true when state is playing', function() {
+      env.dispatchEvent(makeEvent('video::playing'));
       var result = api.isPlaying();
-      env.dispatchEvent(makeEvent('getState::playing'));
-
+      
       return result.then(function(response) {
         return expect(response).toBe(true);
       });
