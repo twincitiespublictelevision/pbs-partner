@@ -1,4 +1,6 @@
-import extend from './libs/extend';
+import Promise from 'native-promise-only';
+
+import Plugin from './libs/plugin';
 import EventHandler from './libs/Events';
 import PBSTransport from './PBSTransport';
 
@@ -43,11 +45,12 @@ const defaults = {
  ]
 };
 
-export default class PBSMessageAPI {
+class PBSMessageAPI {
   constructor(options) {
 
     // Initialize options
-    this._options = extend({}, defaults, (options || {}));
+    this._options = Object.assign({}, defaults, (options || {}));
+    this._options.allowedEvents = this._options.allowedEvents.concat(defaults.allowedEvents);
 
     this._state = {
       playback: 'idle',
@@ -58,7 +61,7 @@ export default class PBSMessageAPI {
 
     this._env = this._options.env || window
 
-    this._transport = new PBSTransport();
+    this._transport = new PBSTransport(this._options.allowedEvents);
 
     this._transport.bind('initialize', () => this._state.playback = 'idle');
     this._transport.bind('play', () => this._state.playback = 'playing');
@@ -134,6 +137,18 @@ export default class PBSMessageAPI {
   off(event, handler) {
     this._transport.unbind(event, handler);
 
+    return this;
+  };
+
+  /**
+   * Simple proxy method for unbinding events
+   *
+   * @param {String} event The name of the event to unbind from
+   * @param {Function} handler The function to unbind from the event
+   * @returns {PBSMessageAPI}
+   */
+  trigger() {
+    this._transport.trigger.apply(this._transport, Array.prototype.slice.call(arguments, 0));
     return this;
   };
 
@@ -302,3 +317,5 @@ export default class PBSMessageAPI {
     }
   };
 }
+
+export default Plugin.mixin(PBSMessageAPI);

@@ -1,4 +1,6 @@
-import EventHandler from "./libs/Events";
+import Promise from 'native-promise-only';
+
+import EventHandler from './libs/Events';
 
 // Helper function for getting the last n elements of a list
 function lastElements(list, n) {
@@ -40,30 +42,15 @@ const playerEvents = {
   // 'seeking': 'seek',
 };
 
-// Define a whitelist of supported events
-const allowedEvents = [
-  'create',
-  'destroy',
-  'initialize',
-  'play',
-  'stop',
-  'pause',
-  'complete',
-  'seek',
-  'adPlay',
-  'adComplete',
-  'error',
-  'position',
-  'message' // Message is a generic event that triggers on every message
-];
-
 // The player origin can not be safely be determined programatically. It
 // is hard set here so communication only happens with the PBS player
 const playerOrigin = 'https://player.pbs.org';
 
 export default class PBSTransport extends EventHandler {
-  constructor(client, server) {
+  constructor(allowedEvents) {
     super();
+
+    this._allowedEvents = allowedEvents;
 
     this._pending = [];
 
@@ -135,7 +122,7 @@ export default class PBSTransport extends EventHandler {
     let pEv = Object.keys(playerEvents).filter(ev => eventData.indexOf(ev) !== -1);
 
     // If this is an event that is mapped, trigger it
-    if (pEv.length > 0 || allowedEvents.indexOf(eventData) !== -1) {
+    if (pEv.length > 0 || this._allowedEvents.indexOf(eventData) !== -1) {
 
       let ev = eventData;
       let value = null;

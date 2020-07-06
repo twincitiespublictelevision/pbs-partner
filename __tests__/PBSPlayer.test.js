@@ -62,9 +62,9 @@ describe('Completion', function() {
 
     api.trigger('message');
     env.dispatchEvent(makeEvent('video::playing'));
-    env.dispatchEvent(makeEvent('getDuration::5'));
+    env.dispatchEvent(makeEvent('duration::5'));
     env.dispatchEvent(makeEvent('video::paused'));
-    env.dispatchEvent(makeEvent('getPosition::5'));
+    env.dispatchEvent(makeEvent('currentTime::5'));
 
     return result.then(() => {
       return expect(handlerMock.mock.calls.length).toBe(1);

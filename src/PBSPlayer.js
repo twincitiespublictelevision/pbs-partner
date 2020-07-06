@@ -23,6 +23,12 @@ function PBSPlayer(options) {
   this._options.allowedEvents = this._options.allowedEvents.concat([
     'connected'
   ]);
+
+  this._handlers = {
+    initialize: this._initialize.bind(this),
+    onInitialPlay: this._onInitialPlay.bind(this),
+    handlePauseAtEndOfVideo: this._handlePauseAtEndOfVideo.bind(this),
+  };
 }
 
 // Extend from the PBSMessagingAPI prototype
@@ -40,13 +46,13 @@ PBSPlayer.prototype.constructor = PBSPlayer;
 PBSPlayer.prototype.setPlayer = function setPlayer(playerFrame) {
 
   // Add a handler to check for initialization
-  this.on('message', this._initialize);
+  this.on('message', this._handlers.initialize);
 
   // Add a handler to run on the initial play event
-  this.on('play', this._onInitialPlay);
+  this.on('play', this._handlers.onInitialPlay);
 
   // When a pause occurs, check to see if the end of video has been reached
-  this.on('pause', this._handlePauseAtEndOfVideo);
+  this.on('pause', this._handlers.handlePauseAtEndOfVideo);
 
   // Boot plugins
   this._loadPlugins();
@@ -59,15 +65,15 @@ PBSPlayer.prototype.setPlayer = function setPlayer(playerFrame) {
  */
 PBSPlayer.prototype.destroy = function destroy() {
   PBSMediaEvents.prototype.destroy.call(this);
-  this.off('play', this._onInitialPlay);
-  this.off('pause', this._handlePauseAtEndOfVideo);
+  this.off('play', this._handlers.onInitialPlay);
+  this.off('pause', this._handlers.handlePauseAtEndOfVideo);
   this._trackingFullVideoDuration = 0;
 };
 
 PBSPlayer.prototype._initialize = function _initialize() {
 
   // Unbind the initialization listener
-  this.off('message', this._initialize);
+  this.off('message', this._handlers.initialize);
 
   // Trigger an connected message to signify that the player has been
   // successfully connected to
@@ -83,7 +89,7 @@ PBSPlayer.prototype._initialize = function _initialize() {
 PBSPlayer.prototype._onInitialPlay = function _onInitialPlay() {
 
   // Unbind the initial play event immediately
-  this.off('play', this._onInitialPlay);
+  this.off('play', this._handlers.onInitialPlay);
 
   // Attempt to determine the full playback duration of the video, so that it
   // can later be used for handle end of video issues

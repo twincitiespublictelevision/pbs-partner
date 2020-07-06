@@ -7,7 +7,7 @@ const get = (id) => storage[id];
 const set = (id, val) => storage[id] = val;
 const del = (id) => delete storage[id];
 
-describe('Resume', function() {
+xdescribe('Resume', function() {
   let env,
     player,
     api,

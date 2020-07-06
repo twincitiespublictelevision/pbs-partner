@@ -109,7 +109,7 @@ describe('MediaStop', function() {
 
     player.contentWindow.postMessage = function() {
       time++;
-      env.dispatchEvent(makeEvent(`getPosition::${time}`));
+      env.dispatchEvent(makeEvent(`currentTime::${time}`));
     };
 
     api.on('MediaStop', handlerMock);

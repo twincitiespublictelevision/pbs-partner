@@ -28,8 +28,13 @@ export default class EventHandler {
 
   trigger(event) {
     let fns = (this._events[event] || []).slice();
+    
     while (fns.length) {
-      fns.shift().apply(this, Array.prototype.slice.call(arguments, 1));
+      let fn = fns.shift();
+
+      if (fn) {
+        fn.apply(this, Array.prototype.slice.call(arguments, 1));
+      }
     }
   }
 }
