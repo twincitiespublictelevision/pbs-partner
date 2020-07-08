@@ -1,5 +1,5 @@
 import PBSPlayer from '../src/PBSPlayer';
-import { origin, mockPlayerFactory, mockWindowFactory, mockMessageEventFactoryFactory } from "./setup";
+import { origin, mockPlayerFactory, mockWindowFactory, mockMessageEventFactoryFactory, dispatch } from "./setup";
 
 describe('MediaStart', function() {
   let env,
@@ -103,30 +103,25 @@ describe('MediaStop', function() {
     return expect(handlerMock.mock.calls.length).toBe(1);
   });
 
-  it('should include duration and reach', function() {
+  it('should include duration and reach', async function() {
     let handlerMock = jest.fn();
-    let time = 0;
-
-    player.contentWindow.postMessage = function() {
-      time++;
-      env.dispatchEvent(makeEvent(`currentTime::${time}`));
-    };
+    let time = 1;
+    let sleep = t => new Promise((resolve) => setTimeout(resolve, t));
 
     api.on('MediaStop', handlerMock);
 
-    let result = new Promise((res) => {
-      setTimeout(() => {
-        api.trigger('complete');
+    await dispatch(env, makeEvent('video::playing'));
 
-        res();
-      }, 2000);
-    });
+    setInterval(async () => {
+      time++;
+      await dispatch(env, makeEvent(`currentTime::${time}`));
+    }, 1000);
 
-    api.trigger('play');
+    await sleep(1500);
 
-    return result.then(() => {
-      return expect(handlerMock.mock.calls[0][0]).toEqual({secondsPlayed: 1, secondsReached: 2});
-    });
+    api.trigger('complete');
+
+    expect(handlerMock.mock.calls[0][0]).toEqual({secondsPlayed: 1, secondsReached: 2});
   });
 });
 
@@ -150,13 +145,13 @@ describe('Progress tracking', function() {
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
-  it('should reset duration and reach on MediaStop', function() {
+  it('should reset duration and reach on MediaStop', async function() {
     let handlerMock = jest.fn();
     let time = 0;
 
-    player.contentWindow.postMessage = function() {
+    player.contentWindow.postMessage = async function() {
       time++;
-      env.dispatchEvent(makeEvent(`getPosition::${time}`));
+      await dispatch(env, makeEvent(`currentTime::${time}`));
     };
 
     api.on('MediaStop', handlerMock);

@@ -187,7 +187,7 @@ export default class PBSMediaEvents extends PBSMessageAPI {
         // If the position of the player is further than the furthest reach point,
         // then record it
         if (this._furthestReach < pos) {
-          this._furthestReach = pos;
+          this._furthestReach = pos|0;
         }
       }.bind(this)
     );

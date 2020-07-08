@@ -1,4 +1,4 @@
-import Promise from 'native-promise-only';
+// import Promise from 'native-promise-only';
 
 import EventHandler from './libs/Events';
 
@@ -185,7 +185,7 @@ export default class PBSTransport extends EventHandler {
       // returned from the API
       try {
         return JSON.parse(msgParts[1]);
-      } catch (exception) {
+      } catch (error) {
 
         // Otherwise return the value as is without manipulation
         return msgParts[1];
@@ -215,9 +215,9 @@ export default class PBSTransport extends EventHandler {
       defaultValue = null;
     }
 
-    return this.send(message).
-      then(this._getMessageValue).
-      catch(function(error) {
+    return this.send(message)
+      .then(this._getMessageValue)
+      .catch(function(error) {
         return defaultValue;
       });
   }

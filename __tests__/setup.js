@@ -13,6 +13,15 @@ function mockMessageChannel() {
   }
 }
 
+export async function dispatch(source, event) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      source.dispatchEvent(event);
+      resolve();
+    }, 0);
+  });
+}
+
 export function mockMessageEventFactoryFactory(source) {
   return function(eventData) {
     return new MessageEvent(

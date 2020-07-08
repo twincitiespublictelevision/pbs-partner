@@ -26,7 +26,7 @@ class PBSPlayer extends PBSMediaEvents {
 
     this._playerHandlers = {
       initialize: this._initialize.bind(this),
-      onInitialPlay: this._onInitialPlay.bind(this),
+      recordFullDurationOfVideo: this._recordFullDurationOfVideo.bind(this),
       handlePauseAtEndOfVideo: this._handlePauseAtEndOfVideo.bind(this),
     };
   }
@@ -42,8 +42,14 @@ class PBSPlayer extends PBSMediaEvents {
     // Add a handler to check for initialization
     this.on('message', this._playerHandlers.initialize);
 
+    // Erase the video duration metric
+    this._trackingFullVideoDuration = Number.NaN;
+
     // Add a handler to run on the initial play event
-    this.on('play', this._playerHandlers.onInitialPlay);
+    this.on('play', this._playerHandlers.recordFullDurationOfVideo);
+
+    // Add a handler to run on the initial play event
+    this.on('position', this._playerHandlers.recordFullDurationOfVideo);
 
     // When a pause occurs, check to see if the end of video has been reached
     this.on('pause', this._playerHandlers.handlePauseAtEndOfVideo);
@@ -59,9 +65,8 @@ class PBSPlayer extends PBSMediaEvents {
    */
   destroy() {
     super.destroy.call(this);
-    this.off('play', this._playerHandlers.onInitialPlay);
     this.off('pause', this._playerHandlers.handlePauseAtEndOfVideo);
-    this._trackingFullVideoDuration = 0;
+    this._trackingFullVideoDuration = Number.NaN;
   };
 
   _initialize() {
@@ -75,36 +80,28 @@ class PBSPlayer extends PBSMediaEvents {
   };
 
   /**
-   * Runs any setup code that relies on a playable video being present. Will
-   * run once during the first play event of the video
-   *
-   * @private
-   */
-  _onInitialPlay() {
-
-    // Unbind the initial play event immediately
-    this.off('play', this._playerHandlers.onInitialPlay);
-
-    // Attempt to determine the full playback duration of the video, so that it
-    // can later be used for handle end of video issues
-    this._recordFullDurationOfVideo();
-  };
-
-  /**
    * Requests the full video duration from the API and stores the value for
    * later reference
    *
    * @private
    */
   _recordFullDurationOfVideo() {
+    if (isNaN(this._trackingFullVideoDuration)) {
+      
+      // Request and store the full video duration
+      this.getDuration().then(function(duration) {
+        if (!isNaN(duration)) {
+          this._trackingFullVideoDuration = duration;
+        }
+      }.bind(this));
+    } else {
 
-    // Start by resetting the internal tracking duration
-    this._trackingFullVideoDuration = 0;
+      // Unbind once the duration has been recorded
+      this.off('play', this._playerHandlers.recordFullDurationOfVideo);
 
-    // Request and store the full video duration
-    this.getDuration().then(function(duration) {
-      this._trackingFullVideoDuration = duration;
-    }.bind(this));
+      // Unbind once the duration has been recorded
+      this.off('position', this._playerHandlers.recordFullDurationOfVideo);
+    }
   };
 
   /**
