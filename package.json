@@ -1,6 +1,6 @@
 {
   "name": "@twincitiespublictelevision/pbs-partner",
-  "version": "2.0.0",
+  "version": "2.0.0-alpha",
   "description": "A library for interacting with an embedded PBS partner player",
   "main": "dist/pbspartner.min.js",
   "scripts": {
