@@ -50,7 +50,11 @@ describe('Completion', function() {
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
-  it('should trigger complete when pause occurs at end of video', async function() {
+  it('should suppress pause event at the end of video', async function() {
+    
+  });
+
+  it('should trigger complete once when pause occurs at end of video', async function() {
     let handlerMock = jest.fn();
     
     api.on('complete', () => {
@@ -60,6 +64,7 @@ describe('Completion', function() {
     await dispatch(env, makeEvent('video::playing'));
     await dispatch(env, makeEvent('duration::5'));
     await dispatch(env, makeEvent('video::paused'));
+    await dispatch(env, makeEvent('video::finished'));
     await dispatch(env, makeEvent('currentTime::5'));
 
     // Emit an arbitrary event to force the duration callback

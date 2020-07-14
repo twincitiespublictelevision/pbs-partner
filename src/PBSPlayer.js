@@ -27,7 +27,6 @@ class PBSPlayer extends PBSMediaEvents {
     this._playerHandlers = {
       initialize: this._initialize.bind(this),
       recordFullDurationOfVideo: this._recordFullDurationOfVideo.bind(this),
-      handlePauseAtEndOfVideo: this._handlePauseAtEndOfVideo.bind(this),
     };
   }
 
@@ -102,28 +101,6 @@ class PBSPlayer extends PBSMediaEvents {
       // Unbind once the duration has been recorded
       this.off('position', this._playerHandlers.recordFullDurationOfVideo);
     }
-  };
-
-  /**
-   * Special edge case handling for pause events that occur at the very end of
-   * a video. This is required to handle cases where a video finishes playback
-   * and instead of sending a complete event, sends a pause event
-   *
-   * @private
-   */
-  _handlePauseAtEndOfVideo() {
-
-    // When a pause occurs, fire off a request for the current playback position.
-    this.getPosition().then(function(position) {
-
-      // If the video has continued beyond or met its duration, trigger the on
-      // complete event
-      if (position > 0 &&
-          this._trackingFullVideoDuration > 0 &&
-          position >= this._trackingFullVideoDuration) {
-        this.trigger('complete');
-      }
-    }.bind(this));
   };
 
   /**

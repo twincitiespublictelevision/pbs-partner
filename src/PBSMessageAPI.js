@@ -173,6 +173,10 @@ class PBSMessageAPI {
     });
   };
 
+  isComplete() {
+    return this._transport.getResponse('ended', false);
+  }
+
   /**
    * Requests the current playback position in seconds.
    *

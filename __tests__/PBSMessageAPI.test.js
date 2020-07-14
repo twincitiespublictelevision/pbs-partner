@@ -1,5 +1,5 @@
 import PBSMessageAPI from './../src/PBSMessageAPI';
-import { origin, mockPlayerFactory, mockWindowFactory, mockMessageEventFactoryFactory } from "./setup";
+import { origin, mockPlayerFactory, mockWindowFactory, mockMessageEventFactoryFactory, dispatch } from "./setup";
 
 describe('setPlayer', function() {
 
@@ -497,18 +497,38 @@ describe('utility', function() {
   });
 
   describe('isPlaying', function() {
-    it('should resolve to false when state is not playing', function() {
-      env.dispatchEvent(makeEvent('video::paused'));
-      var result = api.isPlaying();
+    it('should resolve to false when state is not playing', async function() {
+      await dispatch(env, makeEvent('video::paused'));
+      let result = api.isPlaying();
 
       return result.then(function(response) {
         return expect(response).toBe(false);
       });
     });
 
-    it('should resolve to true when state is playing', function() {
-      env.dispatchEvent(makeEvent('video::playing'));
-      var result = api.isPlaying();
+    it('should resolve to true when state is playing', async function() {
+      await dispatch(env, makeEvent('video::playing'));
+      let result = api.isPlaying();
+      
+      return result.then(function(response) {
+        return expect(response).toBe(true);
+      });
+    });
+  });
+
+  describe('isComplete', function() {
+    it('should resolve to false when video is complete', async function() {
+      let result = api.isComplete();
+      await dispatch(env, makeEvent('ended::false'));
+
+      return result.then(function(response) {
+        return expect(response).toBe(false);
+      });
+    });
+
+    it('should resolve to true when video is complete', async function() {
+      let result = api.isComplete();
+      await dispatch(env, makeEvent('ended::true'));
       
       return result.then(function(response) {
         return expect(response).toBe(true);
