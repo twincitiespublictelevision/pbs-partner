@@ -535,4 +535,24 @@ describe('utility', function() {
       });
     });
   });
+
+  describe('isSeeking', function() {
+    it('should resolve to false when readyState is not 1', async function() {
+      let result = api.isSeeking();
+      await dispatch(env, makeEvent('readyState::4'));
+
+      return result.then(function(response) {
+        return expect(response).toBe(false);
+      });
+    });
+
+    it('should resolve to true when readyState is 1', async function() {
+      let result = api.isSeeking();
+      await dispatch(env, makeEvent('readyState::1'));
+      
+      return result.then(function(response) {
+        return expect(response).toBe(true);
+      });
+    });
+  });
 });

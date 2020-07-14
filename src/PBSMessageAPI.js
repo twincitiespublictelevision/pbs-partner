@@ -159,7 +159,6 @@ class PBSMessageAPI {
    */
   getState() {
     return Promise.resolve(this._state.playback);
-    // return this._transport.getResponse('getState');
   };
 
   /**
@@ -171,10 +170,26 @@ class PBSMessageAPI {
     return this.getState().then(function(state) {
       return state === 'playing';
     });
-  };
+  }
 
+  /**
+   * Helper method to check if the player is at the end of a video
+   * 
+   * @returns {Promise.<boolean>}
+   */
   isComplete() {
     return this._transport.getResponse('ended', false);
+  }
+
+  /**
+   * Helper method to check if the player is currently seeking
+   * 
+   * @returns {Promise.<boolean>}
+   */
+  isSeeking() {
+    return this._transport.getResponse('readyState', 0).then(function(readyState) {
+      return parseInt(readyState) === 1;
+    });
   }
 
   /**
@@ -184,7 +199,7 @@ class PBSMessageAPI {
    */
   getPosition() {
     return this._transport.getResponse('currentTime', 0);
-  };
+  }
 
   /**
    * Requests the currently playing player's duration in seconds.
@@ -193,7 +208,7 @@ class PBSMessageAPI {
    */
   getDuration() {
     return this._transport.getResponse('duration', 0);
-  };
+  }
 
   /**
    * Requests the player's current audio muting state.
@@ -202,7 +217,7 @@ class PBSMessageAPI {
    */
   getMute() {
     return this._transport.getResponse('muted', false);
-  };
+  }
 
   /**
    * Requests the current playback volume percentage, as a number from 0 to 100.
@@ -211,7 +226,7 @@ class PBSMessageAPI {
    */
   getVolume() {
     return this._transport.getResponse('volume', 0).then(v => v * 100);
-  };
+  }
 
   // No-Response methods
 
@@ -224,7 +239,7 @@ class PBSMessageAPI {
    */
   togglePlayState() {
     return this._transport.send('play');
-  };
+  }
 
   /**
    * Requests that the player changes to the playing state. Resolves to null.
@@ -239,7 +254,7 @@ class PBSMessageAPI {
         return !isPlaying ? this._transport.send('play') : null;
       }.bind(this)
     );
-  };
+  }
 
   /**
    * Requests that the player changes to the paused state. Resolves to null.
@@ -254,7 +269,7 @@ class PBSMessageAPI {
         return isPlaying ? this._transport.send('pause') : null;
       }.bind(this)
     );
-  };
+  }
 
   /**
    * Stops the player (returning it to the idle state) and unloads the
@@ -266,7 +281,7 @@ class PBSMessageAPI {
     return this._transport.send('pause').then(() => {
       return this._transport.send('load');
     });
-  };
+  }
 
   /**
    * Jump to the specified position within the currently playing item. The
@@ -277,7 +292,7 @@ class PBSMessageAPI {
    */
   seek(position) {
     return this._transport.send('setCurrentTime', position);
-  };
+  }
 
   /**
    * Change the player's mute state (no sound). Toggles between muted and not
@@ -289,7 +304,7 @@ class PBSMessageAPI {
   setMute() {
     this._state.muted = !this._state.muted;
     return this._transport.send('setMuted', this._state.muted);
-  };
+  }
 
   /**
    * Sets the player's audio volume percentage, as a number between 0 and 100.
@@ -299,7 +314,7 @@ class PBSMessageAPI {
    */
   setVolume(volumePercentage) {
     return this._transport.send('setVolume', volumePercentage / 100);
-  };
+  }
 
   /**
    * Destroys the messaging channel for the PBSMessageAPI so that the event handler
@@ -319,7 +334,7 @@ class PBSMessageAPI {
     } else {
       this._env.removeEventListener('beforeunload', this._pageLeaveHandler);
     }
-  };
+  }
 }
 
 export default Plugin.mixin(PBSMessageAPI);
