@@ -188,7 +188,7 @@ class PBSMessageAPI {
    */
   isSeeking() {
     return this._transport.getResponse('readyState', 0).then(function(readyState) {
-      return parseInt(readyState) === 1;
+      return readyState === 1;
     });
   }
 
