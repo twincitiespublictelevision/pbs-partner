@@ -1,4 +1,4 @@
-// import Promise from 'native-promise-only';
+import Promise from 'native-promise-only';
 
 import EventHandler from './libs/Events';
 
