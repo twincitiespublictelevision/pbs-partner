@@ -2,7 +2,7 @@ version: 2
 jobs:
   checkout:
     docker:
-      - image: circleci/node:6.10
+      - image: circleci/node:12
         auth:
           username: $DOCKERHUB_ACCOUNT 
           password: $DOCKERHUB_PASSWORD
@@ -18,7 +18,7 @@ jobs:
 
   node_test:
     docker:
-      - image: circleci/node:6.10
+      - image: circleci/node:12
         auth:
           username: $DOCKERHUB_ACCOUNT 
           password: $DOCKERHUB_PASSWORD
@@ -39,7 +39,7 @@ jobs:
 
   node_build:
     docker:
-      - image: circleci/node:6.10
+      - image: circleci/node:12
         auth:
           username: $DOCKERHUB_ACCOUNT 
           password: $DOCKERHUB_PASSWORD
@@ -64,7 +64,7 @@ jobs:
 
   deploy_to_github:
     docker:
-      - image: circleci/node:6.10
+      - image: circleci/node:12
         auth:
           username: $DOCKERHUB_ACCOUNT 
           password: $DOCKERHUB_PASSWORD
