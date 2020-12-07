@@ -2,7 +2,10 @@ version: 2
 jobs:
   checkout:
     docker:
-      - image: circleci/node:13
+      - image: circleci/node:12
+        auth:
+          username: $DOCKERHUB_ACCOUNT 
+          password: $DOCKERHUB_PASSWORD
     steps:
       - restore_cache:
           key: repo-v2-{{ .Branch }}
@@ -15,7 +18,10 @@ jobs:
 
   node_test:
     docker:
-      - image: circleci/node:13
+      - image: circleci/node:12
+        auth:
+          username: $DOCKERHUB_ACCOUNT 
+          password: $DOCKERHUB_PASSWORD
     steps:
       - run: echo $CIRCLE_SHA1 > .circle-sha
       - restore_cache:
@@ -33,7 +39,10 @@ jobs:
 
   node_build:
     docker:
-      - image: circleci/node:13
+      - image: circleci/node:12
+        auth:
+          username: $DOCKERHUB_ACCOUNT 
+          password: $DOCKERHUB_PASSWORD
     steps:
       - run: echo $CIRCLE_SHA1 > .circle-sha
       - restore_cache:
@@ -55,7 +64,10 @@ jobs:
 
   deploy_to_github:
     docker:
-      - image: circleci/node:13
+      - image: circleci/node:12
+        auth:
+          username: $DOCKERHUB_ACCOUNT 
+          password: $DOCKERHUB_PASSWORD
     steps:
       - run: echo $CIRCLE_SHA1 > .circle-sha
       - restore_cache:
