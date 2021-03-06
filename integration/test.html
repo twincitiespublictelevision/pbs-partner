@@ -1,0 +1,24 @@
+<html>
+
+<head></head>
+
+<body>
+  <!-- <iframe id="testPlayer"
+    src="https://player.pbs.org/widget/partnerplayer/3052517637/?callsign=ktca&amp;autoplay=false&amp;endscreen=false"
+    allowfullscreen="" scrolling="no" allow="autoplay; fullscreen" width="1280" height="720"></iframe> -->
+  <iframe id="testPlayer"
+    src="https://player.pbs.org/widget/partnerplayer/3052347646/?callsign=ktca&amp;autoplay=false&amp;endscreen=false"
+    allowfullscreen="" scrolling="no" allow="autoplay; fullscreen" width="1280" height="720"></iframe>
+  <script src="pbspartner.min.js"></script>
+  <script>
+    let pbs = new PBSPartner();
+    pbs.setPlayer(document.getElementById('testPlayer'));
+
+    pbs.on('play', () => {
+      console.log('Seek to 10 minute mark');
+      pbs.seek(60 * 10);
+    });
+  </script>
+</body>
+
+</html>

@@ -27,22 +27,22 @@ let STATES = [
 // Namespace for default options
 const defaults = {
 
- // Define a whitelist of supported events
- allowedEvents: [
-   'create',
-   'destroy',
-   'initialize',
-   'play',
-   'stop',
-   'pause',
-   'complete',
-   'seek',
-   'adPlay',
-   'adComplete',
-   'error',
-   'position',
-   'message' // Message is a generic event that triggers on every message
- ]
+  // Define a whitelist of supported events
+  allowedEvents: [
+    'create',
+    'destroy',
+    'initialize',
+    'play',
+    'stop',
+    'pause',
+    'complete',
+    'seek',
+    'adPlay',
+    'adComplete',
+    'error',
+    'position',
+    'message' // Message is a generic event that triggers on every message
+  ]
 };
 
 class PBSMessageAPI {
@@ -73,7 +73,7 @@ class PBSMessageAPI {
   setVideoId(id) {
     this._id = id;
   };
-  
+
   getVideoId() {
     return this._id;
   };
@@ -82,31 +82,31 @@ class PBSMessageAPI {
 
     // Do not destroy if the player is not set
     if (this._player && this._player.contentWindow) {
-  
+
       // Make sure there are no existing bindings
       this.destroy();
     }
 
     // Create a reference to the UI container
     this._player = (typeof playerFrame === 'string') ? q(playerFrame) : playerFrame;
-  
+
     // Do not boot if the player is not set
     if (this._player && this._player.contentWindow) {
 
       // Connect the transport between the client (window) and server (video player)
       this._transport.connect(this._env, this._player);
-  
+
       // Create a bound page leave handler to ensure it is called with the
       // messaging API as the context
       this._pageLeaveHandler = this.destroy.bind(this);
-  
+
       // Add an unload listener depending on the play
       if (isiPad(this._env.navigator.userAgent) || isiPhone(this._env.navigator.userAgent)) {
         this._env.addEventListener('pagehide', this._pageLeaveHandler);
       } else {
         this._env.addEventListener('beforeunload', this._pageLeaveHandler);
       }
-  
+
       // Trigger a create event for anyone listening
       this._transport._triggerEvent('create');
     }
@@ -167,7 +167,7 @@ class PBSMessageAPI {
    * @returns {Promise.<boolean>}
    */
   isPlaying() {
-    return this.getState().then(function(state) {
+    return this.getState().then(function (state) {
       return state === 'playing';
     });
   }
@@ -187,7 +187,7 @@ class PBSMessageAPI {
    * @returns {Promise.<boolean>}
    */
   isSeeking() {
-    return this._transport.getResponse('readyState', 0).then(function(readyState) {
+    return this._transport.getResponse('readyState', 0).then(function (readyState) {
       return readyState === 1;
     });
   }
@@ -291,7 +291,7 @@ class PBSMessageAPI {
    * @returns {Promise.<null>}
    */
   seek(position) {
-    return this._transport.send('setCurrentTime', position);
+    return this._transport.send('currentTime', position);
   }
 
   /**
