@@ -7,7 +7,7 @@ const get = (id) => storage[id];
 const set = (id, val) => storage[id] = val;
 const del = (id) => delete storage[id];
 
-describe('Resume', function() {
+describe('Resume', function () {
   let env,
     player,
     api,
@@ -15,7 +15,7 @@ describe('Resume', function() {
     makeEvent,
     videoId;
 
-  beforeEach(function() {
+  beforeEach(function () {
     storage = [];
     videoId = 'abc-123-def-456';
 
@@ -25,40 +25,40 @@ describe('Resume', function() {
 
     env = mockWindowFactory();
 
-    PBSPlayer.addPlugin('resume', Resume({get, set, del}));
-    api = new PBSPlayer({player: player, env: env});
+    PBSPlayer.addPlugin('resume', Resume({ get, set, del }));
+    api = new PBSPlayer({ player: player, env: env });
     api.setVideoId(videoId);
     api.setPlayer(player);
 
     makeEvent = mockMessageEventFactoryFactory(player.contentWindow);
   });
 
-  it('should record progress on position events', function() {
+  it('should record progress on position events', function () {
     env.dispatchEvent(makeEvent('currentTime::1234'));
 
     return expect(get(videoId)).toEqual(1234);
   });
 
-  it('should only record integers', function() {
+  it('should only record integers', function () {
     env.dispatchEvent(makeEvent('currentTime::1234.5678'));
 
     return expect(get(videoId)).toEqual(1234);
   });
 
-  it('should not call seek on play if progress time does not exist', function() {
+  it('should not call seek on play if progress time does not exist', function () {
     api.trigger('play');
 
-    return expect(messageMock.mock.calls).not.toEqual(expect.arrayContaining([['setCurrentTime::1234', 'https://player.pbs.org']]));
+    return expect(messageMock.mock.calls).not.toEqual(expect.arrayContaining([['currentTime::1234', 'https://player.pbs.org']]));
   });
 
-  it('should call seek on play if progress time exists', function() {
+  it('should call seek on play if progress time exists', function () {
     set(videoId, 1234);
     api.trigger('play');
 
-    return expect(messageMock.mock.calls).toEqual(expect.arrayContaining([['setCurrentTime::1234', 'https://player.pbs.org']]));
+    return expect(messageMock.mock.calls).toEqual(expect.arrayContaining([['currentTime::1234', 'https://player.pbs.org']]));
   });
 
-  it('should clear progress on complete', function() {
+  it('should clear progress on complete', function () {
     env.dispatchEvent(makeEvent('currentTime::1234'));
 
     expect(get(videoId)).toEqual(1234);

@@ -291,6 +291,10 @@ class PBSMessageAPI {
    * @returns {Promise.<null>}
    */
   seek(position) {
+    if (typeof position === 'undefined') {
+      return Promise.resolve(null);
+    }
+
     return this._transport.send('currentTime', position);
   }
 

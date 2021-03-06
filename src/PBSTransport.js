@@ -16,13 +16,12 @@ const noResponse = [
   'stop',
   'load',
   'setMuted',
-  'setVolume',
-  'setCurrentTime'
+  'setVolume'
 ];
 
 // Define a map of the PBS event namespace to the TPT event namespace
 const playerEvents = {
-  
+
   // jwplayer events
   'initialized': 'initialize',
   'video::playing': 'play',
@@ -217,7 +216,7 @@ export default class PBSTransport extends EventHandler {
 
     return this.send(message)
       .then(this._getMessageValue)
-      .catch(function(error) {
+      .catch(function (error) {
         return defaultValue;
       });
   }
@@ -230,7 +229,7 @@ export default class PBSTransport extends EventHandler {
     // server (iframe player) to listen for events and bind it to this object
     // so that it can be called from the client context
     this._eventChannel = this._eventChannel.bind(this);
-  
+
     // Open up a communication channel between the client and the server
     this._client.addEventListener('message', this._eventChannel);
   }
@@ -270,8 +269,9 @@ export default class PBSTransport extends EventHandler {
       function (resolve, reject) {
 
         // Do not listen for a response for the message types that PBS will not
-        // send a response for
-        if (noResponse.indexOf(message) === -1) {
+        // send a response for. Additionally responses are never sent back for
+        // commands that pass a value
+        if (typeof value === 'undefined' && noResponse.indexOf(message) === -1) {
 
           // Define the event handler that will resolve the promise, pass along
           // the response, and finally detach from the window
@@ -280,7 +280,7 @@ export default class PBSTransport extends EventHandler {
             // Make sure that this is a valid event for this player and that
             // it is a response to the same message type that was requested
             if (this._validateEvent(event) &&
-                this._testMessageType(event, message)) {
+              this._testMessageType(event, message)) {
 
               // Unhook this handler from the window so it is not called again
               this._client.removeEventListener(
